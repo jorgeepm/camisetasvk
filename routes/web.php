@@ -18,3 +18,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+use App\Http\Controllers\CategoryController; // <--- 1. IMPORTANTE: Esta línea arriba del todo
+
+// ... (aquí habrá otras rutas como la de welcome o dashboard) ...
+
+// 2. Las rutas de tu tienda:
+Route::get('/categorias', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/categoria/{category}', [CategoryController::class, 'show'])->name('categories.show');
