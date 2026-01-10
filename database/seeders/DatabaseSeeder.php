@@ -5,62 +5,78 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // 1. Crear tu usuario Administrador
+        // 1. Usuario Admin (Mantenemos tu acceso)
         User::factory()->create([
             'name' => 'Jorge Admin',
             'email' => 'admin@camisetasvk.com',
             'password' => bcrypt('password'),
         ]);
 
-        // 2. Crear Categorías
-        $catRock = Category::create([
-            'name' => 'Rock & Metal',
-            'description' => 'Camisetas de tus bandas favoritas'
+        // 2. Las 3 Categorías Principales
+        $catActual = Category::create([
+            'name' => 'Temporada Actual 25/26',
+            'description' => 'Las nuevas equipaciones oficiales. Estrena los colores de este año.',
+        ]);
+
+        $catOutlet = Category::create([
+            'name' => 'Outlet / Temporadas Pasadas',
+            'description' => 'Oportunidades únicas de años anteriores a precios reducidos.',
+        ]);
+
+        $catRetro = Category::create([
+            'name' => 'Retro & Leyendas',
+            'description' => 'Historia del fútbol. Camisetas icónicas que nunca mueren.',
+        ]);
+
+        // 3. Productos de Prueba (Datos iniciales)
+        
+        // --- Temporada Actual 25/26 ---
+        Product::create([
+            'category_id' => $catActual->id,
+            'name' => 'Real Madrid 2026 Local',
+            'description' => 'Camiseta blanca clásica con detalles dorados. Tecnología Heat.Rdy.',
+            'price' => 95.00,
+            'image_path' => 'madrid-2026.jpg'
         ]);
         
-        $catSeries = Category::create([
-            'name' => 'Series y Pelis',
-            'description' => 'Merchandising de cine y TV'
-        ]);
-
-        $catHumor = Category::create([
-            'name' => 'Frases Divertidas',
-            'description' => 'Para echarse unas risas'
-        ]);
-
-        // 3. Crear Camisetas (Productos)
         Product::create([
-            'category_id' => $catRock->id,
-            'name' => 'Camiseta AC/DC Clásica',
-            'price' => 19.99,
-            'description' => '100% Algodón negro. Talla L.',
-            'image_path' => 'acdc.jpg' 
+            'category_id' => $catActual->id,
+            'name' => 'Rayo Vallecano 2026 Centenario',
+            'description' => 'Edición especial con la franja en rayo real. Escudo bordado.',
+            'price' => 80.00,
+            'image_path' => 'rayo-2026.jpg'
+        ]);
+
+        // --- Outlet ---
+        Product::create([
+            'category_id' => $catOutlet->id,
+            'name' => 'Manchester City 2024 Treble',
+            'description' => 'La camiseta con la que ganaron todo. Últimas tallas.',
+            'price' => 45.00,
+            'image_path' => 'city-2024.jpg'
+        ]);
+
+        // --- Retro ---
+        Product::create([
+            'category_id' => $catRetro->id,
+            'name' => 'Brasil 2002 Ronaldo',
+            'description' => 'La camiseta del pentacampeonato. El Fenómeno.',
+            'price' => 130.00,
+            'image_path' => 'brasil-2002.jpg'
         ]);
 
         Product::create([
-            'category_id' => $catRock->id,
-            'name' => 'Sudadera Metallica',
-            'price' => 35.50,
-            'description' => 'Con capucha y bolsillo canguro.',
-            'image_path' => 'metallica.jpg'
-        ]);
-
-        Product::create([
-            'category_id' => $catSeries->id,
-            'name' => 'Camiseta Winter is Coming',
-            'price' => 15.00,
-            'description' => 'Juego de Tronos. Casa Stark.',
-            'image_path' => 'got.jpg'
+            'category_id' => $catRetro->id,
+            'name' => 'AC Milan 2007 Kaka',
+            'description' => 'La época dorada de San Siro. Publicidad de Bwin.',
+            'price' => 115.00,
+            'image_path' => 'milan-2007.jpg'
         ]);
     }
 }
