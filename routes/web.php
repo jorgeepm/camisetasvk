@@ -26,9 +26,11 @@ use App\Http\Controllers\CategoryController; // <--- 1. IMPORTANTE: Esta línea 
 // 2. Las rutas de tu tienda:
 Route::get('/categorias', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categoria/{category}', [CategoryController::class, 'show'])->name('categories.show');
-use App\Http\Controllers\CamisetaController;
 
-// Esta es la dirección para guardar la personalización
-Route::post('/camiseta/personalizar', [CamisetaController::class, 'guardarPersonalizacion']);
 
-Route::get('/camisetas/buscar', [CamisetaController::class, 'buscar']);
+// 1. Importamos el nuevo controlador
+use App\Http\Controllers\ProductController;
+// 2. Ruta para el buscador
+Route::get('/products/search', [ProductController::class, 'buscar']);
+// 3. Ruta para personalizar
+Route::post('/products/customize', [ProductController::class, 'guardarPersonalizacion']);

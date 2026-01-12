@@ -11,10 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // ESTA LÍNEA ES LA MAGIA:
-        $middleware->validateCsrfTokens(except: [
-            'camiseta/personalizar', 
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
