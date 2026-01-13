@@ -11,12 +11,21 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Usuario Admin (Mantenemos tu acceso)
-        User::factory()->create([
-            'name' => 'Jorge Admin',
-            'email' => 'admin@camisetasvk.com',
-            'password' => bcrypt('password'),
-        ]);
+        $teamMembers = [
+            ['name' => 'Jorge Admin', 'email' => 'jorge@camisetasvk.com'],
+            ['name' => 'Lautaro Admin', 'email' => 'lautaro@camisetasvk.com'],
+            ['name' => 'Marcos Admin', 'email' => 'marcos@camisetasvk.com'],
+            ['name' => 'Mayo Admin', 'email' => 'mayo@camisetasvk.com'],
+        ];
+
+        foreach ($teamMembers as $member) {
+            User::factory()->create([
+                'name' => $member['name'],
+                'email' => $member['email'],
+                'password' => bcrypt('password'), // Misma contraseña para todos: "password"
+                'role' => 'admin', // <--- ¡IMPORTANTE! Asignamos el rol aquí
+            ]);
+        }
 
         // 2. Las 3 Categorías Principales
         $catActual = Category::create([
