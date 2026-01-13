@@ -18,6 +18,17 @@
                 </div>
             </div>
 
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                    {{ __('Carrito') }} 
+                    @if(session('cart'))
+                        <span class="ml-2 bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-indigo-200 dark:text-indigo-900">
+                            {{ count(session('cart')) }}
+                        </span>
+                    @endif
+                </x-nav-link>
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
