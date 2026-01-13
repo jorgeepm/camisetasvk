@@ -34,7 +34,7 @@ class Product extends Model
     public function scopeTeam($query, $team)
     {
         if ($team) {
-            return $query->where('name', 'LIKE', "%$team%");
+            return $query->where('team', 'LIKE', '%' . $team . '%');
         }
     }
 }

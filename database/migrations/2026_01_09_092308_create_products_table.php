@@ -21,6 +21,8 @@ return new class extends Migration
             $table->integer('stock');
             $table->string('image_path')->nullable();
             $table->timestamps();
+            $table->string('league')->nullable(); // Para la Liga
+            $table->string('team')->nullable();   // Para el Equipo
         });
     }
 
