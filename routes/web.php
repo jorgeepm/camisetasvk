@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,3 +33,8 @@ Route::get('/categoria/{category}', [CategoryController::class, 'show'])->name('
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store')->middleware('auth');
+// Ruta para ver el ticket de compra (GET)
+Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
+    ->name('checkout.success')
+    ->middleware('auth');

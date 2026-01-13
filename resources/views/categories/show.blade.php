@@ -14,7 +14,11 @@
                 @forelse($products as $product)
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
                         <div class="bg-gray-200 h-48 w-full mb-4 rounded flex items-center justify-center text-gray-500">
-                            [Imagen: {{ $product->image_path }}]
+                            <div class="mb-4 bg-gray-50 rounded-xl p-4 flex justify-center items-center">
+                                <img src="{{ asset('storage/' . $product->image_path) }}" 
+                                    alt="{{ $product->name }}" 
+                                    class="h-56 w-auto object-contain hover:scale-105 transition-transform duration-300">
+                            </div>
                         </div>
 
                         <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ $product->name }}</h3>

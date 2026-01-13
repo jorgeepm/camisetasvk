@@ -11,10 +11,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-<<<<<<< HEAD
         // 1. Usuarios del Equipo (Todos Admins) 🛡️
-=======
->>>>>>> main
         $teamMembers = [
             ['name' => 'Jorge Admin', 'email' => 'jorge@camisetasvk.com'],
             ['name' => 'Lautaro Admin', 'email' => 'lautaro@camisetasvk.com'],

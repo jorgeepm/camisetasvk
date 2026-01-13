@@ -68,9 +68,13 @@
                                     <a href="{{ url('/categorias') }}" class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600 mr-2">
                                         Seguir Comprando
                                     </a>
-                                    <a href="#" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-500">
-                                        Tramitar Pedido 💳
-                                    </a>
+                                    
+                                    <form action="{{ route('checkout.store') }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-500">
+                                            Tramitar Pedido 💳
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </tfoot>
