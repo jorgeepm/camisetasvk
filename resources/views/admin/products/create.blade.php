@@ -1,6 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Crear Nuevo Producto</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Crear Nuevo Producto
+        </h2>
     </x-slot>
 
     <div class="py-12">
@@ -44,11 +46,18 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2">Imagen:</label>
                         <input type="file" name="image" id="imageInput" class="w-full text-sm text-gray-500" accept="image/*" required>
                         <div class="mt-2">
-                            <img id="imagePreview" src="#" style="display:none; max-height: 200px;" class="rounded border">
+                            <img id="imagePreview" src="#" style="display:none; max-height: 150px;" class="rounded border">
                         </div>
                     </div>
 
-                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded">Guardar Producto</button>
+                    <div class="flex justify-between items-center">
+                        <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+                            Guardar Producto
+                        </button>
+                        
+                        <a href="{{ route('products.index') }}" class="text-gray-500 hover:text-gray-700 py-2 px-4">Cancelar</a>
+                    </div>
+
                 </form>
             </div>
         </div>
