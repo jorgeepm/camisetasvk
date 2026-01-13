@@ -28,6 +28,13 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
+        // Verificar stock disponible
+        $currentQuantity = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
+
+        if ($currentQuantity + 1 > $product->stock) {
+            return redirect()->back()->with('error', 'No hay suficiente stock disponible.');
+        }
+
         if(isset($cart[$id])) {
             $cart[$id]['quantity']++;
         } else {
@@ -35,12 +42,12 @@ class CartController extends Controller
                 "name" => $product->name,
                 "quantity" => 1,
                 "price" => $product->price,
-                "image" => $product->image_path
+                "image_path" => $product->image_path
             ];
         }
 
         session()->put('cart', $cart);
-        return redirect()->back()->with('success', '¡Camiseta añadida al carrito!');
+        return redirect()->back()->with('success', 'Producto añadido al carrito.');
     }
 
     // 3. Borrar producto del carrito
@@ -54,5 +61,25 @@ class CartController extends Controller
             }
         }
         return redirect()->back()->with('success', 'Producto eliminado');
+    }
+
+    public function decreaseQuantity($id)
+    {
+        $cart = session()->get('cart');
+
+        if(isset($cart[$id])) {
+            // Si hay más de 1, restamos
+            if($cart[$id]['quantity'] > 1) {
+                $cart[$id]['quantity']--;
+                session()->put('cart', $cart);
+                return redirect()->back()->with('success', 'Cantidad actualizada.');
+            } else {
+                // Si solo queda 1 y le damos a restar, lo borramos del todo
+                unset($cart[$id]);
+                session()->put('cart', $cart);
+                return redirect()->back()->with('success', 'Producto eliminado.');
+            }
+        }
+        return redirect()->back();
     }
 }

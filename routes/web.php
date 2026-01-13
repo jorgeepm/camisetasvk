@@ -38,3 +38,5 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
     ->name('checkout.success')
     ->middleware('auth');
+
+Route::get('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');

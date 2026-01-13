@@ -11,32 +11,29 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    // 1. PROCESAR EL PEDIDO (POST)
     public function store()
     {
-        // A. Verificamos usuario
+        // Verificar autenticación
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Debes iniciar sesión para comprar.');
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión para realizar el pedido.');
         }
 
-        // B. Recuperamos carrito
         $cart = session()->get('cart', []);
         
         if(count($cart) < 1) {
             return redirect()->route('cart.index')->with('error', 'El carrito está vacío.');
         }
 
-        // C. Calculamos total
+        // Calcular total del pedido
         $total = 0;
         foreach($cart as $item) {
             $total += $item['price'] * $item['quantity'];
         }
 
-        // --- INICIO DE TRANSACCIÓN ---
+        // Iniciar transacción para asegurar integridad de datos
         DB::beginTransaction();
 
         try {
-            // D. Creamos el Pedido (AQUÍ nace la variable $order)
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total' => $total,
@@ -44,8 +41,8 @@ class CheckoutController extends Controller
                 'created_at' => now(),
             ]);
 
-            // E. Guardamos los items
             foreach($cart as $id => $details) {
+                // Guardar línea de pedido
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $id,
@@ -53,32 +50,29 @@ class CheckoutController extends Controller
                     'price' => $details['price'],
                 ]);
 
-                // Restar stock
+                // Actualizar stock del producto
                 $product = Product::find($id);
                 if($product) {
                     $product->decrement('stock', $details['quantity']);
                 }
             }
 
-            // F. Confirmamos todo
             DB::commit();
             session()->forget('cart');
 
-            // G. REDIRIGIMOS AL TICKET (Ahora $order sí existe)
             return redirect()->route('checkout.success', $order->id);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
 
-    // 2. MOSTRAR EL TICKET (GET)
     public function success(Order $order)
     {
-        // Seguridad: Solo el dueño del pedido puede verlo
+        // Comprobar que el pedido pertenece al usuario
         if (Auth::id() !== $order->user_id) {
-            abort(403, 'No tienes permiso para ver este pedido.');
+            abort(403);
         }
 
         $order->load('items.product');

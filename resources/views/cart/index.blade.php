@@ -30,14 +30,27 @@
                             @foreach(session('cart') as $id => $details)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="py-4 px-6 border-b border-gray-200 dark:border-gray-600 flex items-center">
-                                        <img src="{{ asset('storage/' . $details['image']) }}" alt="{{ $details['name'] }}" class="w-16 h-16 object-cover rounded mr-4">
-                                        <span class="text-gray-700 dark:text-gray-200 font-medium">{{ $details['name'] }}</span>
+                                        <img src="{{ asset('storage/' . $details['image_path']) }}" 
+                                            alt="{{ $details['name'] }}" 
+                                            class="h-20 w-20 object-cover rounded">                                        <span class="text-gray-700 dark:text-gray-200 font-medium">{{ $details['name'] }}</span>
                                     </td>
                                     <td class="py-4 px-6 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">
                                         {{ $details['price'] }} €
                                     </td>
-                                    <td class="py-4 px-6 border-b border-gray-200 dark:border-gray-600">
-                                        <span class="text-center w-8 inline-block text-gray-700 dark:text-gray-200">{{ $details['quantity'] }}</span>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <div class="flex items-center space-x-2">
+                                            <a href="{{ route('cart.decrease', $id) }}" 
+                                                class="bg-gray-200 text-gray-600 hover:bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs transition duration-150">
+                                                -
+                                            </a>
+
+                                            <span class="font-semibold mx-1">{{ $details['quantity'] }}</span>
+
+                                            <a href="{{ route('cart.add', $id) }}" 
+                                                class="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs transition duration-150">
+                                                +
+                                            </a>
+                                        </div>
                                     </td>
                                     <td class="py-4 px-6 border-b border-gray-200 dark:border-gray-600 text-indigo-600 font-bold">
                                         {{ $details['price'] * $details['quantity'] }} €
