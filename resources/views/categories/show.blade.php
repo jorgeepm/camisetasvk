@@ -22,9 +22,11 @@
                         
                         <div class="mt-4 flex justify-between items-center">
                             <span class="text-xl font-bold text-indigo-500">{{ $product->price }} €</span>
-                            <button class="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-500">
-                                Comprar
-                            </button>
+                            <a href="{{ route('cart.add', $product->id) }}" 
+                                    class="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-500">
+                                    Añadir al Carrito
+                            </a>
+                            
                         </div>
                     </div>
                 @empty
