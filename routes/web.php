@@ -29,15 +29,6 @@ use App\Http\Controllers\CategoryController; // <--- 1. IMPORTANTE: Esta línea 
 Route::get('/categorias', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categoria/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
-<<<<<<< HEAD
-
-// 1. Importamos el nuevo controlador
-use App\Http\Controllers\ProductController;
-// 2. Ruta para el buscador
-Route::get('/products/search', [ProductController::class, 'buscar']);
-// 3. Ruta para personalizar
-Route::post('/products/customize', [ProductController::class, 'guardarPersonalizacion']);
-=======
 // Rutas del Carrito
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
@@ -49,4 +40,3 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
     ->middleware('auth');
 
 Route::get('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
->>>>>>> main
