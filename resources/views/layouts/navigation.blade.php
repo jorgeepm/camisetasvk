@@ -19,6 +19,12 @@
             </div>
 
             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link href="{{ route('categories.index') }}" :active="request()->routeIs('categories.index')">
+                        {{ __('Categorías') }}
+                    </x-nav-link>
+                </div>
+                
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                 <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
                     {{ __('Carrito') }} 
                     @if(session('cart'))
@@ -26,6 +32,12 @@
                             {{ count(session('cart')) }}
                         </span>
                     @endif
+                </x-nav-link>
+            </div>
+
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-nav-link href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">
+                    {{ __('Mis Pedidos') }}
                 </x-nav-link>
             </div>
 
