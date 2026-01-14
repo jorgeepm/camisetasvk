@@ -15,9 +15,10 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
-        return view('categories.show', [
-            'category' => $category,
-            'products' => $category->products 
-        ]);
+        // 1. Buscamos los productos de esta categoría
+        $products = $category->products()->paginate(12);
+
+        // 2. ENVIAMOS A LA VISTA NUEVA 'catalog' (antes ponía 'welcome')
+        return view('catalog', compact('category', 'products'));
     }
 }

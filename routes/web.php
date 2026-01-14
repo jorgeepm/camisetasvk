@@ -7,6 +7,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminOrderController; // Tu controlador de Admin
 use App\Http\Controllers\OrderController;      // El controlador de tu compañero
+use App\Models\Product;                        // ✅ Necesario para la página principal
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +15,16 @@ use Illuminate\Support\Facades\Route;
 | RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
+
+// ✅ CORREGIDO: Ahora carga el catálogo completo en la home
 Route::get('/', function () {
-    return view('welcome');
-});
+    // 1. Obtenemos todos los productos (12 por página)
+    $products = Product::paginate(12);
+    
+    // 2. Cargamos la vista 'catalog' (la que creaste nueva)
+    return view('catalog', compact('products'));
+})->name('home');
+
 
 // Categorías
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -33,7 +41,6 @@ Route::get('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->n
 |--------------------------------------------------------------------------
 | RUTAS DE USUARIO LOGUEADO (Cualquiera registrado)
 |--------------------------------------------------------------------------
-| Aquí es donde debe estar "Mis Pedidos"
 */
 
 Route::get('/dashboard', function () {
@@ -51,7 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-    // ✅ AQUÍ ES DONDE DEBE ESTAR (Fuera del grupo Admin, pero dentro de Auth)
+    // Mis Pedidos (Correctamente colocado aquí para el usuario)
     Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
 });
 
@@ -60,7 +67,6 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 | RUTAS DE ADMINISTRADOR (Solo Role: admin)
 |--------------------------------------------------------------------------
-| Aquí SOLO lo que sea gestión de la tienda
 */
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -68,7 +74,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Gestión de Productos
     Route::resource('products', ProductController::class);
 
-    // Gestión de Pedidos (La tuya, AdminOrderController)
+    // Gestión de Pedidos (Panel de Admin)
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
