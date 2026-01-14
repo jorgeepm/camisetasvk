@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,3 +41,8 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
     ->middleware('auth');
 
 Route::get('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
+
+// Ruta para ver mis pedidos
+Route::get('/mis-pedidos', [OrderController::class, 'index'])
+    ->name('orders.index')
+    ->middleware('auth');
