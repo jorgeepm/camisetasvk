@@ -19,7 +19,6 @@
                                 <x-slot name="trigger">
                                     <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                                         <div>Administración</div>
-
                                         <div class="ms-1">
                                             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -27,39 +26,45 @@
                                         </div>
                                     </button>
                                 </x-slot>
-
                                 <x-slot name="content">
                                     <x-dropdown-link :href="route('products.index')">
                                         {{ __('Gestionar Productos') }}
                                     </x-dropdown-link>
-                                    
                                     <x-dropdown-link :href="route('admin.orders.index')">
-                                        {{ __('Ver Pedidos') }}
+                                        {{ __('Ver Ventas (Admin)') }}
                                     </x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>
                         </div>
                     @endif
-                    </div>
+
+                    @if(Auth::user()->role !== 'admin') 
+                        <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index')">
+                            {{ __('Mis Pedidos') }}
+                        </x-nav-link>
+                    @endif
+
+                </div>
             </div>
 
-            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
-                    {{ __('Carrito') }} 
-                    @if(session('cart'))
-                        <span class="ml-2 bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-indigo-200 dark:text-indigo-900">
-                            {{ count(session('cart')) }}
-                        </span>
-                    @endif
-                </x-nav-link>
-            </div>
+            @if(Auth::user()->role !== 'admin')
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                        {{ __('Carrito') }} 
+                        @if(session('cart'))
+                            <span class="ml-2 bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-indigo-200 dark:text-indigo-900">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </x-nav-link>
+                </div>
+            @endif
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
-
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -67,18 +72,13 @@
                             </div>
                         </button>
                     </x-slot>
-
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -105,23 +105,29 @@
 
             @if(Auth::user()->role === 'admin')
                 <div class="border-t border-gray-200 dark:border-gray-600 mt-2 pt-2 pb-2">
-                    <div class="px-4 text-xs text-gray-400 uppercase font-bold mb-1">
-                        Zona Admin
-                    </div>
+                    <div class="px-4 text-xs text-gray-400 uppercase font-bold mb-1">Zona Admin</div>
                     <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                         {{ __('Gestionar Productos') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')">
-                        {{ __('Ver Pedidos') }}
+                        {{ __('Ver Ventas') }}
                     </x-responsive-nav-link>
                 </div>
             @endif
-            <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
-                {{ __('Carrito') }}
-                @if(session('cart'))
-                    <span class="ml-2">({{ count(session('cart')) }})</span>
-                @endif
-            </x-responsive-nav-link>
+
+            @if(Auth::user()->role !== 'admin')
+                <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index')">
+                    {{ __('Mis Pedidos') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                    {{ __('Carrito') }}
+                    @if(session('cart'))
+                        <span class="ml-2">({{ count(session('cart')) }})</span>
+                    @endif
+                </x-responsive-nav-link>
+            @endif
+
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
@@ -129,18 +135,13 @@
                 <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
-
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
-
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>

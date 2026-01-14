@@ -51,9 +51,9 @@
             <div class="mt-4">
                 <form action="{{ route('checkout.store') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-500 transition">
-                        Tramitar Pedido 💳
-                    </button>
+                    <a href="{{ route('checkout.index') }}" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-md font-bold hover:bg-indigo-500 transition shadow-lg">
+                        Tramitar Pedido ➡️
+                    </a>
                 </form>
             </div>
         </div>

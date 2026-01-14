@@ -38,7 +38,8 @@ class AdminOrderController extends Controller
             'status' => $request->status
         ]);
 
-        return redirect()->route('admin.orders.show', $order)
+        // CAMBIO AQUÍ: Redirigimos a la lista general
+        return redirect()->route('admin.orders.index')
             ->with('success', 'Estado del pedido actualizado correctamente.');
     }
 }

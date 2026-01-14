@@ -43,13 +43,37 @@
                                     {{ $order->created_at->format('d/m/Y H:i') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($order->status == 'completed' || $order->status == 'pagado')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Pagado</span>
-                                    @elseif($order->status == 'pending')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
-                                    @else
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ $order->status }}</span>
-                                    @endif
+                                    @switch($order->status)
+                                        @case('pending')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                🟡 Pendiente
+                                            </span>
+                                            @break
+                                        @case('paid')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                💸 Pagado
+                                            </span>
+                                            @break
+                                        @case('shipped')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                🚚 Enviado
+                                            </span>
+                                            @break
+                                        @case('completed')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                                ✅ Completado
+                                            </span>
+                                            @break
+                                        @case('cancelled')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                ❌ Cancelado
+                                            </span>
+                                            @break
+                                        @default
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                {{ $order->status }}
+                                            </span>
+                                    @endswitch
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap font-bold">{{ $order->total }} €</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
