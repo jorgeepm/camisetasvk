@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CategoryController; // He movido esto arriba para que esté ordenado
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
     // CRUD Completo de Productos (Solo el Admin puede crear, editar o borrar)
     Route::resource('products', ProductController::class);
+
+    // NUEVA RUTA PARA PEDIDOS:
+    Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+
+    Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show'); // <--- NUEVA
+    Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->name('admin.orders.update'); // <--- NUEVA (Para cambiar estado)
 
     // Si en el futuro tienes gestión de categorías o usuarios, ponlas aquí dentro
 });
