@@ -11,12 +11,22 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Usuario Admin (Mantenemos tu acceso)
-        User::factory()->create([
-            'name' => 'Jorge Admin',
-            'email' => 'admin@camisetasvk.com',
-            'password' => bcrypt('password'),
-        ]);
+        // 1. Usuarios del Equipo (Todos Admins) 🛡️
+        $teamMembers = [
+            ['name' => 'Jorge Admin', 'email' => 'jorge@camisetasvk.com'],
+            ['name' => 'Lautaro Admin', 'email' => 'lautaro@camisetasvk.com'],
+            ['name' => 'Marcos Admin', 'email' => 'marcos@camisetasvk.com'],
+            ['name' => 'Mayo Admin', 'email' => 'mayo@camisetasvk.com'],
+        ];
+
+        foreach ($teamMembers as $member) {
+            User::factory()->create([
+                'name' => $member['name'],
+                'email' => $member['email'],
+                'password' => bcrypt('password'), // Misma contraseña para todos: "password"
+                'role' => 'admin', // <--- ¡IMPORTANTE! Asignamos el rol aquí
+            ]);
+        }
 
         // 2. Las 3 Categorías Principales
         $catActual = Category::create([
@@ -42,6 +52,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Real Madrid 2026 Local',
             'description' => 'Camiseta blanca clásica con detalles dorados. Tecnología Heat.Rdy.',
             'price' => 95.00,
+            'stock' => 50,
             'image_path' => 'madrid-2026.jpg'
         ]);
         
@@ -50,6 +61,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Rayo Vallecano 2026 Centenario',
             'description' => 'Edición especial con la franja en rayo real. Escudo bordado.',
             'price' => 80.00,
+            'stock' => 50,
             'image_path' => 'rayo-2026.jpg'
         ]);
 
@@ -59,6 +71,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Manchester City 2024 Treble',
             'description' => 'La camiseta con la que ganaron todo. Últimas tallas.',
             'price' => 45.00,
+            'stock' => 50,
             'image_path' => 'city-2024.jpg'
         ]);
 
@@ -68,6 +81,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Brasil 2002 Ronaldo',
             'description' => 'La camiseta del pentacampeonato. El Fenómeno.',
             'price' => 130.00,
+            'stock' => 50,
             'image_path' => 'brasil-2002.jpg'
         ]);
 
@@ -76,6 +90,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'AC Milan 2007 Kaka',
             'description' => 'La época dorada de San Siro. Publicidad de Bwin.',
             'price' => 115.00,
+            'stock' => 50,
             'image_path' => 'milan-2007.jpg'
         ]);
     }

@@ -18,6 +18,32 @@
                 </div>
             </div>
 
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link href="{{ route('categories.index') }}" :active="request()->routeIs('categories.index')">
+                        {{ __('Categorías') }}
+                    </x-nav-link>
+                </div>
+                
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-nav-link href="{{ route('cart.index') }}" :active="request()->routeIs('cart.index')">
+                    {{-- Texto --}}
+                    <span class="mr-1">{{ __('Carrito') }}</span>
+
+                    {{-- Contador (Solo sale si hay cosas) --}}
+                    @if(session('cart') && count(session('cart')) > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                            {{ count(session('cart')) }}
+                        </span>
+                    @endif
+                </x-nav-link>
+            </div>
+
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-nav-link href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">
+                    {{ __('Mis Pedidos') }}
+                </x-nav-link>
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
