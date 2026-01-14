@@ -26,30 +26,30 @@ class ProductController extends Controller
     }
 
     // 3. GUARDAR PRODUCTO NUEVO (CREATE)
+    // 3. GUARDAR NUEVO PRODUCTO (STORE)
     public function store(Request $request)
     {
-        // Validación de datos (Requisito del PDF)
+        // Validación
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric|min:0', // Evitamos precios negativos
-            'stock' => 'required|integer|min:0', // Evitamos stock negativo
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048' // Validación de imagen
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048' // Input 'image' requerido
         ]);
 
-        // Subida de imagen a storage/app/public/products
-        // Esto cumple el requisito de que el valor apunte a storage/app/public
+        // 1. Subir imagen
         $imagePath = $request->file('image')->store('products', 'public');
 
-        // Crear el producto en la BD
+        // 2. Crear producto (Mapeando 'image' a 'image_path')
         Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'stock' => $request->stock,
             'category_id' => $request->category_id,
-            'image_path' => $imagePath,
+            'image_path' => $imagePath, // <--- AQUÍ GUARDAMOS LA RUTA
         ]);
 
         return redirect()->route('products.index')->with('success', 'Producto creado con éxito.');
@@ -65,7 +65,7 @@ class ProductController extends Controller
     // 5. ACTUALIZAR PRODUCTO (UPDATE)
     public function update(Request $request, Product $product)
     {
-        // Validación (Nota: la imagen aquí es 'nullable' porque al editar es opcional)
+        // Validación (Imagen opcional 'nullable')
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -75,20 +75,22 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        // Preparamos los datos básicos (excluyendo la imagen por ahora)
-        $data = $request->except('image');
+        // 1. Recogemos los datos (quitamos 'image' para no confundir a la BD, y token/method por limpieza)
+        $data = $request->except(['image', '_token', '_method']);
 
-        // Lógica de Imagen: Si suben una nueva, borramos la vieja
+        // 2. Lógica de Imagen: Si suben una nueva...
         if ($request->hasFile('image')) {
-            // Borrar imagen antigua del disco si existe
+            
+            // a) Borrar imagen antigua si existe
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
                 Storage::disk('public')->delete($product->image_path);
             }
-            // Guardar la nueva y actualizar la ruta en el array de datos
+
+            // b) Subir la nueva y guardar la ruta en el array $data con la clave CORRECTA
             $data['image_path'] = $request->file('image')->store('products', 'public');
         }
 
-        // Actualizar en BD
+        // 3. Actualizar en BD (Laravel ignorará lo que no esté en $fillable, pero así vamos seguros)
         $product->update($data);
 
         return redirect()->route('products.index')->with('success', 'Producto actualizado.');

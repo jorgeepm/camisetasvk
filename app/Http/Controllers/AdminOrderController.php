@@ -28,18 +28,31 @@ class AdminOrderController extends Controller
     }
 
     // Cambiar el estado del pedido
-    public function update(Request $request, Order $order)
+    public function update(Request $request, Product $product)
     {
         $request->validate([
-            'status' => 'required|in:pending,paid,shipped,completed,cancelled'
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        $order->update([
-            'status' => $request->status
-        ]);
+        $data = $request->all();
 
-        // CAMBIO AQUÍ: Redirigimos a la lista general
-        return redirect()->route('admin.orders.index')
-            ->with('success', 'Estado del pedido actualizado correctamente.');
+        if ($request->hasFile('image')) {
+            // (Opcional) Aquí podrías borrar la imagen antigua si quisieras limpiar
+            
+            // Guardamos la nueva
+            $path = $request->file('image')->store('products', 'public');
+            $data['image'] = $path;
+        } else {
+            // Si no suben foto nueva, quitamos 'image' de $data para no borrar la que ya tenía
+            unset($data['image']);
+        }
+
+        $product->update($data);
+
+        return redirect()->route('products.index')->with('success', 'Producto actualizado.');
     }
 }
