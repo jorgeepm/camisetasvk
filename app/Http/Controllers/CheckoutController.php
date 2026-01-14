@@ -79,4 +79,23 @@ class CheckoutController extends Controller
 
         return view('checkout.success', compact('order'));
     }
+
+    public function index()
+    {
+        // Recuperamos el carrito de la sesión
+        $cart = session()->get('cart', []);
+        
+        // Si el carrito está vacío, lo mandamos fuera
+        if(count($cart) < 1) {
+            return redirect()->route('categories.index');
+        }
+
+        // Calculamos el total para mostrarlo
+        $total = 0;
+        foreach($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        return view('checkout.index', compact('cart', 'total'));
+    }
 }
