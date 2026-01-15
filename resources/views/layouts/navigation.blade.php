@@ -19,20 +19,28 @@
             </div>
 
             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                <x-nav-link href="{{ route ('categories.index') }}" :active="request()->routeIs('cart.index')">
-                    {{ __('Categorías') }}
-                </x-nav-link>
-            </div>
-            
-
+                    <x-nav-link href="{{ route('categories.index') }}" :active="request()->routeIs('categories.index')">
+                        {{ __('Categorías') }}
+                    </x-nav-link>
+                </div>
+                
             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
-                    {{ __('Carrito') }} 
-                    @if(session('cart'))
-                        <span class="ml-2 bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-indigo-200 dark:text-indigo-900">
+                <x-nav-link href="{{ route('cart.index') }}" :active="request()->routeIs('cart.index')">
+                    {{-- Texto --}}
+                    <span class="mr-1">{{ __('Carrito') }}</span>
+
+                    {{-- Contador (Solo sale si hay cosas) --}}
+                    @if(session('cart') && count(session('cart')) > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
                             {{ count(session('cart')) }}
                         </span>
                     @endif
+                </x-nav-link>
+            </div>
+
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-nav-link href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">
+                    {{ __('Mis Pedidos') }}
                 </x-nav-link>
             </div>
 
