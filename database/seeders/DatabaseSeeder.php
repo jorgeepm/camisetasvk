@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,15 +21,23 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($teamMembers as $member) {
-            User::factory()->create([
+            User::create([
                 'name' => $member['name'],
                 'email' => $member['email'],
-                'password' => bcrypt('password'), // Misma contraseña para todos: "password"
-                'role' => 'admin', // <--- ¡IMPORTANTE! Asignamos el rol aquí
+                'password' => Hash::make('password'), // Todos entran con "password"
+                'role' => 'admin', // <--- ¡VITAL! Sin esto no podréis entrar al panel
             ]);
         }
+        
+        // Creamos un cliente normal para pruebas
+        User::create([
+             'name' => 'Cliente Ejemplo',
+             'email' => 'cliente@cliente.com',
+             'password' => Hash::make('password'),
+             'role' => 'user', 
+        ]);
 
-        // 2. Las 3 Categorías Principales
+        // 2. LAS 3 CATEGORÍAS PRINCIPALES
         $catActual = Category::create([
             'name' => 'Temporada Actual 25/26',
             'description' => 'Las nuevas equipaciones oficiales. Estrena los colores de este año.',
@@ -44,9 +53,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Historia del fútbol. Camisetas icónicas que nunca mueren.',
         ]);
 
-        // 3. Productos de Prueba (Datos iniciales)
+        // 3. PRODUCTOS DE PRUEBA (¡AHORA CON STOCK!)
         
-        // --- Temporada Actual 25/26 ---
+        // --- Temporada Actual ---
         Product::create([
             'category_id' => $catActual->id,
             'name' => 'Real Madrid 2026 Local',

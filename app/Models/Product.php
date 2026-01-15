@@ -9,6 +9,17 @@ class Product extends Model
 {
     use HasFactory;
 
+    // Estos son los campos que permitimos rellenar masivamente (seguridad)
+    protected $fillable = [
+        'category_id',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'image_path'
+    ];
+
+    // Relación: Un producto PERTENECE A una categoría
     // Aquí empieza la magia. Todo debe estar entre las llaves { } de la clase.
 
     // 1. Relación: Un producto PERTENECE A una categoría
