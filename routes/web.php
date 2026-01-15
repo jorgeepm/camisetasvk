@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AddressController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,3 +60,13 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success']) 
 Route::get('/mis-pedidos', [OrderController::class, 'index'])
     ->name('orders.index')
     ->middleware('auth');
+
+// ---------
+
+// Rutas de la dirección (Address) del cliente
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/addresses', [AddressController::class, 'index'])->name('profile.addresses');
+    Route::post('/profile/addresses', [AddressController::class, 'store'])->name('profile.addresses.store');
+    Route::delete('/profile/addresses/{address}', [AddressController::class, 'destroy'])->name('profile.addresses.destroy');
+});
+
