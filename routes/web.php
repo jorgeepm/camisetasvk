@@ -9,6 +9,9 @@ use App\Http\Controllers\AdminOrderController; // Tu controlador de Admin
 use App\Http\Controllers\OrderController;      // El controlador de tu compañero
 use App\Models\Product;                        // ✅ Necesario para la página principal
 use Illuminate\Support\Facades\Route;
+use App\Livewire\ShopFilters;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,13 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ✅ CORREGIDO: Ahora carga el catálogo completo en la home
-Route::get('/', function () {
-    // 1. Obtenemos todos los productos (12 por página)
-    $products = Product::paginate(12);
-    
-    // 2. Cargamos la vista 'catalog' (la que creaste nueva)
-    return view('catalog', compact('products'));
-})->name('home');
+Route::get('/', App\Livewire\ShopFilters::class)->name('home');
 
 
 // Categorías
@@ -34,7 +31,12 @@ Route::get('/categoria/{category}', [CategoryController::class, 'show'])->name('
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
-Route::get('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
+Route::get('/cart/increase/{id}', [CartController::class, 'increaseQuantity'])->name('cart.increase');
+Route::get('/cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
+
+// Personalización de camisetas
+Route::get('/shirts/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::post('/customize-product/{id}', [CartController::class, 'addToCartCustomized'])->name('products.customize');
 
 
 /*
@@ -44,7 +46,16 @@ Route::get('cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->n
 */
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    // Buscamos los 3 productos más vendidos
+    $topProductsIds = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_qty'))
+        ->groupBy('product_id')
+        ->orderBy('total_qty', 'desc')
+        ->take(3)
+        ->pluck('product_id');
+
+    $featuredProducts = Product::whereIn('id', $topProductsIds)->get();
+
+    return view('dashboard', compact('featuredProducts'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -72,7 +83,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     
     // Gestión de Productos
-    Route::resource('products', ProductController::class);
+    Route::resource('products', ProductController::class)->except(['show']);
 
     // Gestión de Pedidos (Panel de Admin)
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');

@@ -12,7 +12,7 @@
                     
                     @auth
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ __('Dashboard') }}
+                            {{ __('Destacados') }}
                         </x-nav-link>
                     @endauth
 

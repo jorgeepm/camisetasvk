@@ -29,17 +29,19 @@
                     {{-- CONTROLES LIVEWIRE --}}
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div class="flex items-center space-x-2">
-                            <button wire:click="decrement({{ $id }})" class="bg-gray-200 hover:bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs cursor-pointer">-</button>
-                            <span>{{ $details['quantity'] }}</span>
-                            <button wire:click="increment({{ $id }})" class="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs cursor-pointer">+</button>
+                            {{-- Fíjate en las comillas simples alrededor de {{ $id }} --}}
+                            <button wire:click="decrement('{{ $id }}')" class="bg-gray-200 hover:bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs cursor-pointer">-</button>
+                            
+                            <span class="font-bold text-gray-900 dark:text-white">{{ $details['quantity'] }}</span>
+                            
+                            {{-- Lo mismo aquí para el incremento --}}
+                            <button wire:click="increment('{{ $id }}')" class="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs cursor-pointer">+</button>
                         </div>
                     </td>
 
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ $details['price'] * $details['quantity'] }} €
-                    </td>
+                    {{-- Y para el botón de eliminar --}}
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button wire:click="remove({{ $id }})" class="text-red-600 hover:text-red-900 text-sm cursor-pointer">Eliminar</button>
+                        <button wire:click="remove('{{ $id }}')" class="text-red-600 hover:text-red-900 text-sm cursor-pointer font-bold">Eliminar</button>
                     </td>
                 </tr>
                 @endforeach

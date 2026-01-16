@@ -20,6 +20,8 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th class="px-4 py-2">Producto</th>
+                            {{-- NUEVA COLUMNA DE PERSONALIZACIÓN --}}
+                            <th class="px-4 py-2">Personalización (Estampado)</th>
                             <th class="px-4 py-2">Precio</th>
                             <th class="px-4 py-2">Cant.</th>
                             <th class="px-4 py-2">Subtotal</th>
@@ -29,11 +31,27 @@
                         @foreach($order->items as $item)
                         <tr class="border-b">
                             <td class="px-4 py-3 font-medium text-gray-900">
-                                {{ $item->product->name ?? 'Producto borrado' }}
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ asset('storage/' . $item->product->image_path) }}" class="w-10 h-10 object-contain bg-gray-100 rounded">
+                                    {{ $item->product->name ?? 'Producto borrado' }}
+                                </div>
                             </td>
-                            <td class="px-4 py-3">{{ $item->price }} €</td>
-                            <td class="px-4 py-3">{{ $item->quantity }}</td>
-                            <td class="px-4 py-3 font-bold">{{ $item->price * $item->quantity }} €</td>
+                            {{-- DETALLES DE TALLA, NOMBRE Y DORSAL --}}
+                            <td class="px-4 py-3">
+                                <div class="bg-indigo-50 p-2 rounded border border-indigo-100 text-xs">
+                                    <p class="text-indigo-800 font-bold mb-1 uppercase tracking-tighter">Ficha Técnica:</p>
+                                    <p><span class="text-gray-500">Talla:</span> <b class="text-gray-900">{{ $item->size ?? 'N/A' }}</b></p>
+                                    @if($item->custom_name)
+                                        <p><span class="text-gray-500">Nombre:</span> <b class="text-gray-900 uppercase">{{ $item->custom_name }}</b></p>
+                                    @endif
+                                    @if($item->custom_number)
+                                        <p><span class="text-gray-500">Número:</span> <b class="text-gray-900">{{ $item->custom_number }}</b></p>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">{{ number_format($item->price, 2) }} €</td>
+                            <td class="px-4 py-3 text-center">{{ $item->quantity }}</td>
+                            <td class="px-4 py-3 font-bold text-gray-900">{{ number_format($item->price * $item->quantity, 2) }} €</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -42,13 +60,13 @@
                 <div class="mt-6 flex justify-end">
                     <div class="text-right">
                         <p class="text-gray-600">Total Pagado:</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $order->total }} €</p>
+                        <p class="text-2xl font-bold text-indigo-600">{{ number_format($order->total, 2) }} €</p>
                     </div>
                 </div>
             </div>
 
             <div class="w-1/3 space-y-6">
-                
+                {{-- Bloque Cliente --}}
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-bold mb-4 text-gray-700">Cliente</h3>
                     <p class="text-gray-900 font-medium">{{ $order->user->name }}</p>
@@ -56,6 +74,7 @@
                     <p class="text-gray-500 text-xs mt-2">Registrado el: {{ $order->user->created_at->format('d/m/Y') }}</p>
                 </div>
 
+                {{-- Bloque Gestión de Estado --}}
                 <div class="bg-white shadow-sm sm:rounded-lg p-6 border-l-4 border-blue-500">
                     <h3 class="text-lg font-bold mb-4 text-gray-700">Gestionar Estado</h3>
                     
@@ -66,18 +85,17 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Estado actual:</label>
                         <select name="status" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-4">
                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>🟡 Pendiente</option>
-                            <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>🟢 Pagado</option>
+                            <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>🟢 Pagado (En Fabricación)</option>
                             <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>🚚 Enviado</option>
                             <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>✅ Completado</option>
                             <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>❌ Cancelado</option>
                         </select>
 
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow-lg">
                             Actualizar Estado
                         </button>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
