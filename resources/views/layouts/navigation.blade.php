@@ -62,6 +62,11 @@
                                     <x-dropdown-link :href="route('products.index')">
                                         {{ __('Gestionar Productos') }}
                                     </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('admin.categories.index')">
+                                        {{ __('Gestionar Categorías') }}
+                                    </x-dropdown-link>
+
                                     <x-dropdown-link :href="route('admin.orders.index')">
                                         {{ __('Ver Ventas (Admin)') }}
                                     </x-dropdown-link>
