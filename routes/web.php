@@ -4,15 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-<<<<<<< HEAD
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\AddressController;
-=======
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminOrderController; // Tu controlador de Admin
 use App\Http\Controllers\OrderController;      // El controlador de tu compañero
 use Illuminate\Support\Facades\Route;
->>>>>>> main
 
 /*
 |--------------------------------------------------------------------------
@@ -80,7 +75,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 });
 
-<<<<<<< HEAD
 // --- ZONA CORREGIDA DEL CHECKOUT ---
 
 // 1. PANTALLA DE RESUMEN (GET): Para ver el formulario
@@ -114,6 +108,4 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/addresses/{address}', [AddressController::class, 'destroy'])->name('profile.addresses.destroy');
 });
 
-=======
 require __DIR__.'/auth.php';
->>>>>>> main
