@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // <--- ¡VITAL! Sin esto, no se guardará quién es admin
     ];
 
     /**
@@ -46,8 +47,10 @@ class User extends Authenticatable
         ];
     }
 
-    public function addresses() 
+    // RELACIÓN EXTRA: Un usuario tiene muchos pedidos 🛍️
+    // Esto te servirá luego para ver el historial de compras
+    public function orders()
     {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(Order::class);
     }
 }
