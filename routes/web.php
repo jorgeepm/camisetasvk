@@ -5,13 +5,13 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\AdminOrderController; // Tu controlador de Admin
-use App\Http\Controllers\OrderController;      // El controlador de tu compañero
-use App\Models\Product;                        // ✅ Necesario para la página principal
+use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\OrderController;
+use App\Models\Product;
+use App\Models\OrderItem; // Necesario para contar ventas
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB; // Necesario para las sumas de ventas
 use App\Livewire\ShopFilters;
-use App\Models\OrderItem;
-use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,13 +19,34 @@ use Illuminate\Support\Facades\DB;
 |--------------------------------------------------------------------------
 */
 
-// ✅ CORREGIDO: Ahora carga el catálogo completo en la home
-Route::get('/', App\Livewire\ShopFilters::class)->name('home');
+// 1. HOME / DESTACADOS: Muestra el diseño "Dashboard" (Oscuro, Top 3) para todos
+Route::get('/', function () {
+    // Lógica para sacar los 3 productos más vendidos (Copiada de tu dashboard antiguo)
+    $topProductsIds = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_qty'))
+        ->groupBy('product_id')
+        ->orderBy('total_qty', 'desc')
+        ->take(3)
+        ->pluck('product_id');
+
+    $featuredProducts = Product::whereIn('id', $topProductsIds)->get();
+
+    // CARGAMOS LA VISTA 'dashboard' QUE ES LA QUE TE GUSTA
+    // (Gracias a que arreglamos el navigation, ahora funciona sin estar logueado)
+    return view('dashboard', compact('featuredProducts'));
+})->name('home');
+
+
+// 2. CATÁLOGO COMPLETO: Para el botón "Ver todas" (Usa Livewire)
+Route::get('/catalogo', App\Livewire\ShopFilters::class)->name('catalog.all');
 
 
 // Categorías
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categoria/{category}', [CategoryController::class, 'show'])->name('categories.show');
+
+// Detalle de Producto y Personalización
+Route::get('/shirts/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::post('/customize-product/{id}', [CartController::class, 'addToCartCustomized'])->name('products.customize');
 
 // Carrito
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -34,19 +55,15 @@ Route::delete('/remove-from-cart', [CartController::class, 'remove'])->name('car
 Route::get('/cart/increase/{id}', [CartController::class, 'increaseQuantity'])->name('cart.increase');
 Route::get('/cart/decrease/{id}', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
 
-// Personalización de camisetas
-Route::get('/shirts/{product}', [ProductController::class, 'show'])->name('products.show');
-Route::post('/customize-product/{id}', [CartController::class, 'addToCartCustomized'])->name('products.customize');
-
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS DE USUARIO LOGUEADO (Cualquiera registrado)
+| RUTAS DE USUARIO LOGUEADO
 |--------------------------------------------------------------------------
 */
 
+// Mantenemos la ruta dashboard original por si acaso, aunque ahora la Home es igual.
 Route::get('/dashboard', function () {
-    // Buscamos los 3 productos más vendidos
     $topProductsIds = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_qty'))
         ->groupBy('product_id')
         ->orderBy('total_qty', 'desc')
@@ -69,31 +86,27 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-    // Mis Pedidos (Correctamente colocado aquí para el usuario)
+    // Mis Pedidos
     Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
 });
 
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS DE ADMINISTRADOR (Solo Role: admin)
+| RUTAS DE ADMINISTRADOR
 |--------------------------------------------------------------------------
 */
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    
-    // Gestión de Productos
     Route::resource('products', ProductController::class)->except(['show']);
+    
+    Route::get('/admin/categories', [CategoryController::class, 'indexAdmin'])->name('admin.categories.index');
+    Route::post('/admin/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+    Route::delete('/admin/categories/{category}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
 
-    // Gestión de Pedidos (Panel de Admin)
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
-    // En tu grupo de rutas de Admin:
-    Route::get('/admin/categories', [App\Http\Controllers\CategoryController::class, 'indexAdmin'])->name('admin.categories.index');
-    Route::post('/admin/categories', [App\Http\Controllers\CategoryController::class, 'store'])->name('admin.categories.store');
-    Route::delete('/admin/categories/{category}', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('admin.categories.destroy');
-
 });
 
 require __DIR__.'/auth.php';
