@@ -43,8 +43,8 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
                                     {{-- IMAGEN --}}
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($product->image_path)
-                                            <img src="{{ asset('storage/' . $product->image_path) }}" alt="img" class="h-12 w-12 object-cover rounded border border-gray-300 dark:border-gray-600">
+                                        @if($product->image_blob)
+                                            <img src="{{ $product->image_blob }}" alt="img" class="h-12 w-12 object-cover rounded border border-gray-300 dark:border-gray-600">
                                         @else
                                             <div class="h-12 w-12 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs">Sin Foto</div>
                                         @endif

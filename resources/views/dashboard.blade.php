@@ -26,7 +26,7 @@
                                     Top Ventas
                                 </div>
                                 
-                                <img src="{{ asset('storage/' . $product->image_path) }}" 
+                                <img src="{{ $product->image_blob ?? 'https://via.placeholder.com/300' }}" 
                                      class="w-full h-64 object-contain transition-transform duration-500 group-hover:scale-110"
                                      alt="{{ $product->name }}">
                             </div>
