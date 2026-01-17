@@ -108,4 +108,13 @@ class ProductController extends Controller
         
         return redirect()->route('products.index')->with('success', 'Producto eliminado.');
     }
+
+    // ==========================================
+    // NUEVO: MOSTRAR PRODUCTO PARA EL CLIENTE (PERSONALIZADOR)
+    // ==========================================
+    public function show(Product $product)
+    {
+        // Retorna la vista pública donde el usuario elige nombre y número
+        return view('products.show', compact('product'));
+    }
 }

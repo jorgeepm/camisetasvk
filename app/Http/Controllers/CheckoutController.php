@@ -13,7 +13,7 @@ class CheckoutController extends Controller
 {
     public function store()
     {
-        // Verificar autenticación
+        // 1. Verificar autenticación
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Debes iniciar sesión para realizar el pedido.');
         }
@@ -22,6 +22,23 @@ class CheckoutController extends Controller
         
         if(count($cart) < 1) {
             return redirect()->route('cart.index')->with('error', 'El carrito está vacío.');
+        }
+
+        // --- BLOQUE DE SEGURIDAD AÑADIDO ---s
+        // Verificamos cada item del carrito antes de tocar la base de datos
+        foreach($cart as $item) {
+            // Validar largo del nombre (Máx 15)
+            if (isset($item['custom_name']) && strlen($item['custom_name']) > 15) {
+                return redirect()->route('cart.index')->with('error', 'Seguridad: Se detectó un nombre demasiado largo en el carrito.');
+            }
+            // Validar rango del número (1-99)
+            if (isset($item['custom_number']) && ($item['custom_number'] < 1 || $item['custom_number'] > 99)) {
+                return redirect()->route('cart.index')->with('error', 'Seguridad: Se detectó un dorsal inválido.');
+            }
+            // Validar que el nombre solo tenga letras (opcional pero recomendado)
+            if (isset($item['custom_name']) && !preg_match('/^[a-zA-Z\s]*$/', $item['custom_name'])) {
+                return redirect()->route('cart.index')->with('error', 'Seguridad: El nombre solo puede contener letras.');
+            }
         }
 
         // Calcular total del pedido
@@ -37,21 +54,27 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total' => $total,
-                'status' => 'completed',
+                'status' => 'paid',
                 'created_at' => now(),
             ]);
 
             foreach($cart as $id => $details) {
-                // Guardar línea de pedido
+                // Obtenemos el ID numérico real del producto
+                $realProductId = $details['id'] ?? $id;
+
+                // Guardar línea de pedido con personalización blindada
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $id,
+                    'product_id' => $realProductId,
                     'quantity' => $details['quantity'],
                     'price' => $details['price'],
+                    'size' => $details['size'] ?? null,
+                    'custom_name' => $details['custom_name'] ?? null,
+                    'custom_number' => $details['custom_number'] ?? null,
                 ]);
 
-                // Actualizar stock del producto
-                $product = Product::find($id);
+                // Actualizar stock
+                $product = Product::find($realProductId);
                 if($product) {
                     $product->decrement('stock', $details['quantity']);
                 }
@@ -87,7 +110,7 @@ class CheckoutController extends Controller
         
         // Si el carrito está vacío, lo mandamos fuera
         if(count($cart) < 1) {
-            return redirect()->route('categories.index');
+            return redirect()->route('home');
         }
 
         // Calculamos el total para mostrarlo
