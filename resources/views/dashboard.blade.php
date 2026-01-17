@@ -27,7 +27,8 @@
                                 </div>
                                 
                                 <img src="{{ asset('storage/' . $product->image_path) }}" 
-                                     class="w-full h-64 object-contain transition-transform duration-500 group-hover:scale-110">
+                                     class="w-full h-64 object-contain transition-transform duration-500 group-hover:scale-110"
+                                     alt="{{ $product->name }}">
                             </div>
 
                             <h4 class="text-xl font-extrabold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h4>
@@ -36,10 +37,26 @@
                                 <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400">
                                     {{ number_format($product->price, 2) }} €
                                 </span>
-                                <a href="{{ route('products.show', $product->id) }}" 
-                                   class="bg-gray-900 dark:bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:scale-105 transition-transform">
-                                    Personalizar 👕
-                                </a>
+                                
+                                {{-- 🔥 LÓGICA DE BOTONES: ADMIN vs CLIENTE 🔥 --}}
+                                @if(Auth::check() && Auth::user()->role === 'admin')
+                                    
+                                    {{-- 🔧 ADMIN: BOTÓN EDITAR (ESTILO CATÁLOGO) --}}
+                                    <a href="{{ route('products.edit', $product->id) }}" 
+                                       class="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-wide hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shadow-sm bg-white dark:bg-transparent">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                        Editar
+                                    </a>
+
+                                @else
+                                    
+                                    {{-- 🛒 CLIENTE: BOTÓN PERSONALIZAR --}}
+                                    <a href="{{ route('products.show', $product->id) }}" 
+                                       class="bg-gray-900 dark:bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:scale-105 transition-transform shadow-md">
+                                        Personalizar 👕
+                                    </a>
+
+                                @endif
                             </div>
                         </div>
                     @empty

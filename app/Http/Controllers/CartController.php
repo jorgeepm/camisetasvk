@@ -128,6 +128,6 @@ class CartController extends Controller
         ];
 
         session()->put('cart', $cart);
-        return redirect()->route('checkout.index')->with('success', 'Producto personalizado añadido.');
+        return redirect()->route('cart.index')->with('success', 'Producto personalizado añadido al carrito.');
     }
 }
