@@ -23,10 +23,22 @@
                     {{-- COLUMNA PRODUCTO --}}
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            {{-- FOTO --}}
-                            @if(isset($details['image_path']))
-                                <img src="{{ asset('storage/' . $details['image_path']) }}" alt="{{ $details['name'] }}" class="h-12 w-12 rounded object-cover mr-4 border border-gray-200 dark:border-gray-600">
-                            @endif
+                            
+                            {{-- 🖼️ FOTO DEL CARRITO (HÍBRIDA) --}}
+                            <div class="h-12 w-12 flex-shrink-0 mr-4">
+                                @if(isset($details['image_blob']) && $details['image_blob'])
+                                    {{-- 1. Nueva (Blob) --}}
+                                    <img src="{{ $details['image_blob'] }}" alt="{{ $details['name'] }}" class="h-12 w-12 rounded object-cover border border-gray-200 dark:border-gray-600">
+                                
+                                @elseif(isset($details['image_path']) && $details['image_path'])
+                                    {{-- 2. Antigua (Storage) --}}
+                                    <img src="{{ asset('storage/' . $details['image_path']) }}" alt="{{ $details['name'] }}" class="h-12 w-12 rounded object-cover border border-gray-200 dark:border-gray-600">
+                                
+                                @else
+                                    {{-- 3. Placeholder --}}
+                                    <div class="h-12 w-12 rounded bg-gray-200 flex items-center justify-center text-xs text-gray-500">Sin Foto</div>
+                                @endif
+                            </div>
                             
                             <div>
                                 {{-- NOMBRE CAMISETA --}}
@@ -94,7 +106,7 @@
             <p class="text-xs text-gray-500 mb-6">Impuestos incluidos. Gastos de envío calculados en el siguiente paso.</p>
             
             <div class="flex items-center gap-6">
-                {{-- BOTÓN 1: SEGUIR COMPRANDO (NUEVO) --}}
+                {{-- BOTÓN 1: SEGUIR COMPRANDO --}}
                 <a href="{{ route('catalog.all') }}" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-sm transition flex items-center">
                     ← Seguir Comprando
                 </a>
@@ -114,7 +126,7 @@
             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Tu carrito está vacío</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">¡Vamos a llenarlo de camisetas chulas!</p>
             <div class="mt-6">
-                <a href="{{ route('home') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <a href="{{ route('catalog.all') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Ir a comprar
                 </a>
             </div>

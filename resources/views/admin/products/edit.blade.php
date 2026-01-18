@@ -69,9 +69,23 @@
                     {{-- IMAGEN ACTUAL Y NUEVA --}}
                     <div class="mb-8 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                         <div class="flex items-center gap-6">
+                            
+                            {{-- 🖼️ ZONA DE IMAGEN ARREGLADA (Híbrida) --}}
                             <div class="text-center">
                                 <label class="block text-gray-700 dark:text-gray-300 text-xs font-bold mb-2">Imagen Actual:</label>
-                                <img src="{{ asset('storage/' . $product->image_path) }}" class="h-24 w-auto rounded border shadow-md" alt="Actual">
+                                
+                                @if($product->image_blob)
+                                    {{-- 1. Nueva (Blob en BD) --}}
+                                    <img src="{{ $product->image_blob }}" class="h-24 w-auto rounded border shadow-md" alt="Actual">
+                                @elseif($product->image_path)
+                                    {{-- 2. Antigua (Storage) --}}
+                                    <img src="{{ asset('storage/' . $product->image_path) }}" class="h-24 w-auto rounded border shadow-md" alt="Actual">
+                                @else
+                                    {{-- 3. Sin imagen --}}
+                                    <div class="h-24 w-24 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500 border border-gray-300 dark:border-gray-500">
+                                        Sin Imagen
+                                    </div>
+                                @endif
                             </div>
                             
                             <div class="flex-1">
