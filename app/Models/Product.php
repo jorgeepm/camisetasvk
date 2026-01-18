@@ -16,7 +16,7 @@ class Product extends Model
         'description',
         'price',
         'stock',
-        'image_path'
+        'image_blob'
     ];
 
     // Relación: Un producto PERTENECE A una categoría
@@ -45,7 +45,7 @@ class Product extends Model
     public function scopeTeam($query, $team)
     {
         if ($team) {
-            return $query->where('name', 'LIKE', "%$team%");
+            return $query->where('team', 'LIKE', '%' . $team . '%');
         }
     }
 }

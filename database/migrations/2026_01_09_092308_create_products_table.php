@@ -19,8 +19,10 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
             $table->text('description');
             $table->integer('stock');
-            $table->string('image_path')->nullable();
+            $table->longText('image_blob')->nullable(); // Guardamos la imagen en Base64 (Simulando BLOB para facilidad de visualización)
             $table->timestamps();
+            $table->string('league')->nullable(); // Para la Liga
+            $table->string('team')->nullable();   // Para el Equipo
         });
     }
 
