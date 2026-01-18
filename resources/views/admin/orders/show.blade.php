@@ -13,6 +13,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex gap-6">
             
+            {{-- BLOQUE PRINCIPAL: ARTÍCULOS --}}
             <div class="w-2/3 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="text-lg font-bold mb-4 text-gray-700">Artículos comprados</h3>
                 
@@ -20,7 +21,6 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th class="px-4 py-2">Producto</th>
-                            {{-- NUEVA COLUMNA DE PERSONALIZACIÓN --}}
                             <th class="px-4 py-2">Personalización (Estampado)</th>
                             <th class="px-4 py-2">Precio</th>
                             <th class="px-4 py-2">Cant.</th>
@@ -32,18 +32,35 @@
                         <tr class="border-b">
                             <td class="px-4 py-3 font-medium text-gray-900">
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ asset('storage/' . $item->product->image_path) }}" class="w-10 h-10 object-contain bg-gray-100 rounded">
+                                    
+                                    {{-- 🖼️ IMAGEN ARREGLADA (Híbrida) --}}
+                                    @if($item->product && $item->product->image_blob)
+                                        {{-- 1. Nueva (Blob) --}}
+                                        <img src="{{ $item->product->image_blob }}" class="w-10 h-10 object-contain bg-gray-100 rounded border border-gray-200">
+                                    
+                                    @elseif($item->product && $item->product->image_path)
+                                        {{-- 2. Antigua (Storage) --}}
+                                        <img src="{{ asset('storage/' . $item->product->image_path) }}" class="w-10 h-10 object-contain bg-gray-100 rounded border border-gray-200">
+                                    
+                                    @else
+                                        {{-- 3. Placeholder --}}
+                                        <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-[8px] text-gray-500">Sin Foto</div>
+                                    @endif
+
                                     {{ $item->product->name ?? 'Producto borrado' }}
                                 </div>
                             </td>
+                            
                             {{-- DETALLES DE TALLA, NOMBRE Y DORSAL --}}
                             <td class="px-4 py-3">
                                 <div class="bg-indigo-50 p-2 rounded border border-indigo-100 text-xs">
                                     <p class="text-indigo-800 font-bold mb-1 uppercase tracking-tighter">Ficha Técnica:</p>
                                     <p><span class="text-gray-500">Talla:</span> <b class="text-gray-900">{{ $item->size ?? 'N/A' }}</b></p>
+                                    
                                     @if($item->custom_name)
                                         <p><span class="text-gray-500">Nombre:</span> <b class="text-gray-900 uppercase">{{ $item->custom_name }}</b></p>
                                     @endif
+                                    
                                     @if($item->custom_number)
                                         <p><span class="text-gray-500">Número:</span> <b class="text-gray-900">{{ $item->custom_number }}</b></p>
                                     @endif
@@ -65,7 +82,9 @@
                 </div>
             </div>
 
+            {{-- BLOQUE LATERAL: CLIENTE Y ESTADO --}}
             <div class="w-1/3 space-y-6">
+                
                 {{-- Bloque Cliente --}}
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-bold mb-4 text-gray-700">Cliente</h3>
