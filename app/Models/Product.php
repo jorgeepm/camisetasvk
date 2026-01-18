@@ -16,7 +16,7 @@ class Product extends Model
         'description',
         'price',
         'stock',
-        'image_path'
+        'image_blob'
     ];
 
     // Relación: Un producto PERTENECE A una categoría
