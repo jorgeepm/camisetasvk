@@ -25,7 +25,7 @@ Route::get('/', function () {
 })->name('welcome');
 
 // 1. HOME / DESTACADOS: Muestra el diseño "Dashboard" (Oscuro, Top 3) para todos
-Route::get('/tienda', function () {
+Route::get('/home', function () {
     // Lógica para sacar los 3 productos más vendidos (Copiada de tu dashboard antiguo)
     $topProductsIds = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_qty'))
         ->groupBy('product_id')

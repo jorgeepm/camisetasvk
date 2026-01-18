@@ -53,20 +53,18 @@
             </h1>
 
             <div class="mt-12">
-                @auth
-                    <a href="{{ url('/tienda') }}" 
-                    class="inline-block bg-[#1b1b18] text-white px-12 py-5 rounded-full font-bold text-xl transition-transform hover:scale-110 shadow-2xl">
-                        ENTRAR AHORA
-                    </a>
-                @else
-                    <button @click="resaltar = true; setTimeout(() => resaltar = false, 2000)"
-                    class="inline-block bg-[#1b1b18] text-white px-12 py-5 rounded-full font-bold text-xl transition-transform hover:scale-105 active:scale-95 shadow-2xl cursor-pointer">
-                        EMPEZAR A COMPRAR
-                    </button>
-                    <p x-show="resaltar" x-transition class="mt-4 text-[#0004ff] font-bold animate-bounce">
-                        ¡Primero necesitas una cuenta! ↑
+                {{-- Cambiamos el <button> por un <a> (enlace real) --}}
+                <a href="{{ url('/home') }}" 
+                class="inline-block bg-[#1b1b18] text-white px-12 py-5 rounded-full font-bold text-xl transition-all hover:scale-110 hover:bg-[#0004ff] shadow-2xl">
+                    VER CATÁLOGO
+                </a>
+
+                {{-- Este aviso solo sale si no están logueados --}}
+                @guest
+                    <p class="mt-4 text-gray-500 text-sm">
+                        O <a href="{{ route('login') }}" class="underline hover:text-[#0004ff]">inicia sesión</a> para una mejor experiencia
                     </p>
-                @endauth
+                @endguest
             </div>
         </main>
     </body>
