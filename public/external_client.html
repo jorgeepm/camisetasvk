@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente Externo AJAX - CamisetasVK</title>
+    <!-- Tailwind CSS (via CDN para simplicidad) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Escaparate Externo</h1>
+            <p class="text-gray-600">
+                Esta página carga los productos asíncronamente (AJAX) desde <code
+                    class="bg-gray-200 p-1 rounded">/api/products</code>.
+                <br>Cumple el requisito de "codificación de archivo fuera de la aplicación".
+            </p>
+            <button onclick="loadProducts()"
+                class="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition">
+                Refrescar Datos
+            </button>
+        </header>
+
+        <div id="loader" class="hidden text-center text-indigo-600 text-xl font-bold mb-8">
+            Cargando ...
+        </div>
+
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <!-- AQUÍ SE INYECTARÁN LOS PRODUCTOS -->
+        </div>
+    </div>
+
+    <script>
+        // Función principal AJAX
+        async function loadProducts() {
+            const grid = document.getElementById('product-grid');
+            const loader = document.getElementById('loader');
+
+            // Limpiar y mostrar loader
+            grid.innerHTML = '';
+            loader.classList.remove('hidden');
+
+            try {
+                // LLAMADA ASÍNCRONA A LA API
+                const response = await fetch('http://127.0.0.1:8000/api/products');
+
+                if (!response.ok) throw new Error('Error en la API');
+
+                const products = await response.json();
+
+                // OCULTAR LOADER
+                loader.classList.add('hidden');
+
+                // RENDERIZAR
+                if (products.length === 0) {
+                    grid.innerHTML = '<p class="text-center w-full col-span-4 text-gray-500">No hay productos disponibles.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const card = `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300">
+                            <div class="h-48 p-4 flex justify-center items-center bg-gray-50">
+                                <img src="${product.image_blob || 'https://via.placeholder.com/150'}" 
+                                     class="max-h-full max-w-full object-contain">
+                            </div>
+                            <div class="p-5">
+                                <h3 class="font-bold text-gray-800 text-lg mb-2 truncate">${product.name}</h3>
+                                <p class="text-gray-500 text-sm mb-4 line-clamp-2">${product.description}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xl font-black text-indigo-600">${product.price} €</span>
+                                    <span class="text-xs font-semibold bg-gray-100 px-2 py-1 rounded text-gray-600">Stock: ${product.stock}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.innerHTML += card;
+                });
+
+            } catch (error) {
+                console.error(error);
+                loader.innerText = 'Error al cargar productos. Verifica que el servidor está corriendo.';
+            }
+        }
+
+        // Cargar al inicio
+        loadProducts();
+    </script>
+</body>
+
+</html>

@@ -63,23 +63,71 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Producto eliminado');
     }
 
-    public function decreaseQuantity($id)
+    public function increaseQuantity($id)
     {
-        $cart = session()->get('cart');
+        $cart = session()->get('cart', []);
 
         if(isset($cart[$id])) {
-            // Si hay más de 1, restamos
+            $cart[$id]['quantity']++;
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->back();
+    }
+
+    public function decreaseQuantity($id)
+    {
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$id])) {
             if($cart[$id]['quantity'] > 1) {
                 $cart[$id]['quantity']--;
-                session()->put('cart', $cart);
-                return redirect()->back()->with('success', 'Cantidad actualizada.');
             } else {
-                // Si solo queda 1 y le damos a restar, lo borramos del todo
+                // Si es 1 y pulsa menos, lo quitamos
                 unset($cart[$id]);
-                session()->put('cart', $cart);
-                return redirect()->back()->with('success', 'Producto eliminado.');
             }
+            session()->put('cart', $cart);
         }
+
         return redirect()->back();
+    }
+
+    // ==========================================
+    // AÑADIR PRODUCTO PERSONALIZADO
+    // ==========================================
+    public function addToCartCustomized(Request $request, $id)
+    {
+        // 1. Verificación de seguridad
+        $request->validate([
+            'custom_name'   => 'nullable|string|max:15|regex:/^[a-zA-Z\s]+$/', // Máx 15 caracteres, solo letras
+            'custom_number' => 'nullable|integer|between:1,99',               // Solo números del 1 al 99
+            'size'          => 'required|string|in:S,M,L,XL',                 // Solo tallas válidas
+        ], [
+            // Mensajes personalizados opcionales
+            'custom_name.max'       => 'El nombre no puede tener más de 15 letras.',
+            'custom_name.regex'     => 'El nombre solo puede contener letras.',
+            'custom_number.between' => 'El dorsal debe ser un número entre 1 y 99.',
+        ]);
+
+        $product = Product::findOrFail($id);
+        $cart = session()->get('cart', []);
+
+        // Creamos una clave única para que no se mezclen camisetas con distintos nombres
+        $cartKey = $id . '_' . $request->custom_name . '_' . $request->custom_number . '_' . $request->size;
+
+        $cart[$cartKey] = [
+            "id" => $product->id,
+            "name" => $product->name,
+            "quantity" => 1,
+            "price" => $product->price,
+            "image_path" => $product->image_path,
+            // Datos que luego el CheckoutController guardará en la base de datos
+            "size" => $request->size,
+            "custom_name" => $request->custom_name,
+            "custom_number" => $request->custom_number
+        ];
+
+        session()->put('cart', $cart);
+        return redirect()->route('cart.index')->with('success', 'Producto personalizado añadido al carrito.');
     }
 }

@@ -39,17 +39,24 @@ class ProductController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048' // Input 'image' requerido
         ]);
 
-        // 1. Subir imagen
-        $imagePath = $request->file('image')->store('products', 'public');
+        // 1. Convertir imagen a Base64 para guardar en BD (BLOB)
+        $imageBlob = null;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->getRealPath();
+            $data = file_get_contents($path);
+            $base64 = base64_encode($data);
+            $mime = $request->file('image')->getMimeType();
+            $imageBlob = "data:$mime;base64,$base64";
+        }
 
-        // 2. Crear producto (Mapeando 'image' a 'image_path')
+        // 2. Crear producto
         Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'stock' => $request->stock,
             'category_id' => $request->category_id,
-            'image_path' => $imagePath, // <--- AQUÍ GUARDAMOS LA RUTA
+            'image_blob' => $imageBlob, // <--- GUARDAMOS EL BLOB (Base64)
         ]);
 
         return redirect()->route('products.index')->with('success', 'Producto creado con éxito.');
@@ -80,14 +87,14 @@ class ProductController extends Controller
 
         // 2. Lógica de Imagen: Si suben una nueva...
         if ($request->hasFile('image')) {
-            
-            // a) Borrar imagen antigua si existe
-            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-                Storage::disk('public')->delete($product->image_path);
-            }
+            // Convertimos a Base64
+            $path = $request->file('image')->getRealPath();
+            $data = file_get_contents($path);
+            $base64 = base64_encode($data);
+            $mime = $request->file('image')->getMimeType();
 
-            // b) Subir la nueva y guardar la ruta en el array $data con la clave CORRECTA
-            $data['image_path'] = $request->file('image')->store('products', 'public');
+            // Guardamos en el array de datos
+            $data['image_blob'] = "data:$mime;base64,$base64";
         }
 
         // 3. Actualizar en BD (Laravel ignorará lo que no esté en $fillable, pero así vamos seguros)
@@ -99,13 +106,19 @@ class ProductController extends Controller
     // 6. BORRAR PRODUCTO (DELETE)
     public function destroy(Product $product)
     {
-        // Borramos la imagen del disco para no dejar basura
-        if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-            Storage::disk('public')->delete($product->image_path);
-        }
-        
+        // No necesitamos borrar archivo de disco, ya que está en BD
+
         $product->delete(); // Borramos el registro de la BD
-        
+
         return redirect()->route('products.index')->with('success', 'Producto eliminado.');
+    }
+
+    // ==========================================
+    // NUEVO: MOSTRAR PRODUCTO PARA EL CLIENTE (PERSONALIZADOR)
+    // ==========================================
+    public function show(Product $product)
+    {
+        // Retorna la vista pública donde el usuario elige nombre y número
+        return view('products.show', compact('product'));
     }
 }

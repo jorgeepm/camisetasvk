@@ -7,11 +7,27 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Helper para obtener BLOB de las imágenes que ya están en storage/app/public
+        $getBlob = function ($filename) {
+            $path = storage_path('app/public/' . $filename);
+            if (!file_exists($path)) {
+                // Intento fallback a public/storage si el link simbolico existe
+                $path = public_path('storage/' . $filename);
+                if (!file_exists($path))
+                    return null;
+            }
+
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        };
+
         // 1. Usuarios del Equipo (Todos Admins) 🛡️
         $teamMembers = [
             ['name' => 'Jorge Admin', 'email' => 'jorge@camisetasvk.com'],
@@ -24,17 +40,17 @@ class DatabaseSeeder extends Seeder
             User::create([
                 'name' => $member['name'],
                 'email' => $member['email'],
-                'password' => Hash::make('password'), // Todos entran con "password"
-                'role' => 'admin', // <--- ¡VITAL! Sin esto no podréis entrar al panel
+                'password' => Hash::make('password'),
+                'role' => 'admin',
             ]);
         }
-        
+
         // Creamos un cliente normal para pruebas
         User::create([
-             'name' => 'Cliente Ejemplo',
-             'email' => 'cliente@cliente.com',
-             'password' => Hash::make('password'),
-             'role' => 'user', 
+            'name' => 'Cliente Ejemplo',
+            'email' => 'cliente@cliente.com',
+            'password' => Hash::make('password'),
+            'role' => 'user',
         ]);
 
         // 2. LAS 3 CATEGORÍAS PRINCIPALES
@@ -53,8 +69,8 @@ class DatabaseSeeder extends Seeder
             'description' => 'Historia del fútbol. Camisetas icónicas que nunca mueren.',
         ]);
 
-        // 3. PRODUCTOS DE PRUEBA (¡AHORA CON STOCK!)
-        
+        // 3. PRODUCTOS DE PRUEBA (¡AHORA CON IMÁGENES BLOB!)
+
         // --- Temporada Actual ---
         Product::create([
             'category_id' => $catActual->id,
@@ -62,16 +78,16 @@ class DatabaseSeeder extends Seeder
             'description' => 'Camiseta blanca clásica con detalles dorados. Tecnología Heat.Rdy.',
             'price' => 95.00,
             'stock' => 50,
-            'image_path' => 'madrid-2026.jpg'
+            'image_blob' => $getBlob('madrid-2026.jpg')
         ]);
-        
+
         Product::create([
             'category_id' => $catActual->id,
             'name' => 'Rayo Vallecano 2026 Centenario',
             'description' => 'Edición especial con la franja en rayo real. Escudo bordado.',
             'price' => 80.00,
             'stock' => 50,
-            'image_path' => 'rayo-2026.jpg'
+            'image_blob' => $getBlob('rayo-2026.jpg')
         ]);
 
         // --- Outlet ---
@@ -81,7 +97,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'La camiseta con la que ganaron todo. Últimas tallas.',
             'price' => 45.00,
             'stock' => 50,
-            'image_path' => 'city-2024.jpg'
+            'image_blob' => $getBlob('city-2024.jpg')
         ]);
 
         // --- Retro ---
@@ -91,7 +107,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'La camiseta del pentacampeonato. El Fenómeno.',
             'price' => 130.00,
             'stock' => 50,
-            'image_path' => 'brasil-2002.jpg'
+            'image_blob' => $getBlob('brasil-2002.jpg')
         ]);
 
         Product::create([
@@ -100,7 +116,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'La época dorada de San Siro. Publicidad de Bwin.',
             'price' => 115.00,
             'stock' => 50,
-            'image_path' => 'milan-2007.jpg'
+            'image_blob' => $getBlob('milan-2007.jpg')
         ]);
     }
 }
