@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- 🔙 BOTÓN VOLVER (Nuevo) --}}
+            {{-- 🔙 BOTÓN VOLVER --}}
             <div class="mb-6">
                 <a href="{{ route('catalog.all') }}"
                     class="inline-flex items-center text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition duration-200">
@@ -27,20 +27,37 @@
                 </div>
             @endif
 
-            <div
-                class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
 
                 {{-- COLUMNA IZQUIERDA: IMAGEN Y DETALLES --}}
                 <div class="flex flex-col items-center">
-                    <img src="{{ $product->image_blob ?? 'https://via.placeholder.com/300' }}"
-                        alt="{{ $product->name }}"
-                        class="w-full max-w-sm h-auto object-contain rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
+                    
+                    {{-- 🖼️ IMAGEN ARREGLADA (Híbrida: Blob + Path) --}}
+                    <div class="w-full flex justify-center mb-6">
+                        @if($product->image_blob)
+                            {{-- 1. Nueva (Base64) --}}
+                            <img src="{{ $product->image_blob }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="w-full max-w-sm h-auto object-contain rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
+                        @elseif($product->image_path)
+                            {{-- 2. Antigua (Storage) --}}
+                            <img src="{{ asset('storage/' . $product->image_path) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="w-full max-w-sm h-auto object-contain rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
+                        @else
+                            {{-- 3. Placeholder --}}
+                            <div class="w-full max-w-sm h-64 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center shadow-inner">
+                                <span class="text-gray-400 font-bold">Sin Imagen</span>
+                            </div>
+                        @endif
+                    </div>
 
-                    <h2 class="mt-8 text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
-                        {{ $product->name }}</h2>
+                    <h2 class="mt-4 text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight text-center">
+                        {{ $product->name }}
+                    </h2>
 
-                    {{-- 💶 CAMBIO A EUROS --}}
-                    <p class="text-2xl text-indigo-600 dark:text-indigo-400 font-bold mt-2">{{ $product->price }} €</p>
+                    {{-- 💶 PRECIO EN EUROS --}}
+                    <p class="text-2xl text-indigo-600 dark:text-indigo-400 font-bold mt-2">{{ number_format($product->price, 2) }} €</p>
 
                     <p class="mt-4 text-gray-600 dark:text-gray-400 text-center leading-relaxed max-w-md">
                         {{ $product->description }}
@@ -48,8 +65,7 @@
                 </div>
 
                 {{-- COLUMNA DERECHA: FORMULARIO --}}
-                <div
-                    class="bg-gray-50 dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner">
+                <div class="bg-gray-50 dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner h-fit">
                     <h3 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -120,20 +136,22 @@
         const input = document.getElementById('custom_name');
         const count = document.getElementById('char-count');
 
-        input.addEventListener('input', () => {
-            // Forzamos mayúsculas visualmente (opcional, pero queda mejor en camisetas)
-            input.value = input.value.toUpperCase();
+        if (input && count) {
+            input.addEventListener('input', () => {
+                // Forzamos mayúsculas visualmente
+                input.value = input.value.toUpperCase();
 
-            const length = input.value.length;
-            count.textContent = `${length}/15`;
+                const length = input.value.length;
+                count.textContent = `${length}/15`;
 
-            if (length >= 15) {
-                count.classList.add('text-red-500', 'font-bold');
-                count.classList.remove('text-gray-500');
-            } else {
-                count.classList.remove('text-red-500', 'font-bold');
-                count.classList.add('text-gray-500');
-            }
-        });
+                if (length >= 15) {
+                    count.classList.add('text-red-500', 'font-bold');
+                    count.classList.remove('text-gray-500');
+                } else {
+                    count.classList.remove('text-red-500', 'font-bold');
+                    count.classList.add('text-gray-500');
+                }
+            });
+        }
     </script>
 </x-app-layout>

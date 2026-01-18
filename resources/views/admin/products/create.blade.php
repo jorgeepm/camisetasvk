@@ -22,6 +22,7 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-8 border border-gray-200 dark:border-gray-700">
                 
+                {{-- FORMULARIO --}}
                 <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
@@ -65,12 +66,13 @@
                                   class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition" required>{{ old('description') }}</textarea>
                     </div>
 
-                    {{-- IMAGEN --}}
+                    {{-- IMAGEN (Input para subir) --}}
                     <div class="mb-8">
                         <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Imagen:</label>
                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition relative">
                             <div class="space-y-1 text-center">
-                                {{-- Previsualización --}}
+                                
+                                {{-- Previsualización JS --}}
                                 <img id="imagePreview" src="#" style="display:none; max-height: 200px;" class="mx-auto rounded border dark:border-gray-500 mb-4 shadow-lg">
                                 
                                 <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
@@ -100,7 +102,7 @@
         </div>
     </div>
 
-    {{-- Script de Previsualización --}}
+    {{-- Script de Previsualización (Client Side) --}}
     <script>
         document.getElementById('imageInput').addEventListener('change', function(e) {
             if (e.target.files[0]) {
