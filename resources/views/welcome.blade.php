@@ -58,13 +58,6 @@
                 class="inline-block bg-[#1b1b18] text-white px-12 py-5 rounded-full font-bold text-xl transition-all hover:scale-110 hover:bg-[#0004ff] shadow-2xl">
                     VER CATÁLOGO
                 </a>
-
-                {{-- Este aviso solo sale si no están logueados --}}
-                @guest
-                    <p class="mt-4 text-gray-500 text-sm">
-                        O <a href="{{ route('login') }}" class="underline hover:text-[#0004ff]">inicia sesión</a> para una mejor experiencia
-                    </p>
-                @endguest
             </div>
         </main>
     </body>
