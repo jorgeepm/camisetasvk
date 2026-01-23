@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-8">
+            <div class="bg-gray-100 dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-8">
                 
                 <div class="text-center mb-8">
                     <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
@@ -61,7 +61,7 @@
                 <div class="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6">
                     <div class="flex justify-between text-base font-medium text-gray-900 dark:text-white">
                         <p class="text-lg">Total Pagado</p>
-                        <p class="text-3xl font-black text-indigo-600">{{ number_format($order->total, 2) }} €</p>
+                        <p class="text-3xl font-black text-[#0004ff] dark:text-indigo-600">{{ number_format($order->total, 2) }} €</p>
                     </div>
                 </div>
 
@@ -69,7 +69,7 @@
                     <a href="{{ route('orders.index') }}" class="inline-block bg-gray-800 dark:bg-gray-700 border border-transparent rounded-xl py-3 px-8 text-base font-bold text-white hover:bg-gray-900 transition shadow-lg">
                         Ver Mis Pedidos 📦
                     </a>
-                    <a href="{{ route('home') }}" class="inline-block bg-indigo-600 border border-transparent rounded-xl py-3 px-8 text-base font-bold text-white hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30">
+                    <a href="{{ route('home') }}" class="inline-block bg-[#0004ff] dark:bg-indigo-600 border border-transparent rounded-xl py-3 px-8 text-base font-bold text-white hover:bg-[#0258f7] dark:hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30">
                         Seguir Comprando 🛒
                     </a>
                 </div>

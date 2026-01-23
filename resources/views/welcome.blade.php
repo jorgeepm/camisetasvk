@@ -9,6 +9,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -21,7 +22,7 @@
 
     
     </head>
-    <body x-data="{ resaltar: false }" class="bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-[#FDFDFC] to-[#9cfcff] dark:from-[#1a1a1a] dark:to-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col font-sans antialiased">
+    <body x-data="{ resaltar: false }" class="bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-[#FDFDFC] to-[#9cfcff] dark:from-gray-900 dark:via-gray-900 dark:to-indigo-700 text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col font-sans antialiased">
     
         <header class="w-full lg:max-w-4xl max-w-[335px] mb-6">
             @if (Route::has('login'))
@@ -30,7 +31,7 @@
                         <span class="text-xs text-gray-400 uppercase tracking-widest">Sesión activa</span>
                     @else
                         <a href="{{ route('login') }}" 
-                        class="text-gray-800 font-semibold transition-all duration-300 hover:text-[#0004ff] hover:-translate-y-1 hover:drop-shadow-[0_4px_10px_rgba(0,4,255,0.3)]">
+                        class="text-gray-800 dark:text-white font-semibold transition-all duration-300 hover:text-[#0004ff] dark:hover:text-[#9cfcff] hover:-translate-y-1 hover:drop-shadow-[0_4px_10px_rgba(0,4,255,0.3)]">
                             Iniciar sesión
                         </a>
                         @if (Route::has('register'))
@@ -45,17 +46,17 @@
         </header>
 
         <main class="flex flex-col items-center justify-center text-center grow">
-            <x-logo class="h-40 w-auto mb-8 drop-shadow-lg animate-bounce" style="animation-duration: 3s;" />
+            {{-- Ahora el componente ya gestiona el cambio de imagen internamente --}}
+            <x-logo class="h-40 w-auto mb-8 drop-shadow-lg animate-bounce dark:drop-shadow-[0_0_30px_rgba(0,4,255,0.6)]" style="animation-duration: 3s;" />
 
             <h1 class="text-6xl md:text-9xl font-black tracking-tighter text-[#1b1b18] dark:text-white leading-none uppercase">
                 BIENVENIDO A <br>
-                <span class="text-[#0004ff]">CAMISETAS FC</span>
+                <span class="text-indigo-700 drop-shadow-[0_0_15px_rgba(0,4,255,0.5)] dark:drop-shadow-[0_0_15px_rgba(0,4,255,0.5)]">CAMISETAS FC</span>
             </h1>
 
             <div class="mt-12">
-                {{-- Cambiamos el <button> por un <a> (enlace real) --}}
-                <a href="{{ url('/home') }}" 
-                class="inline-block bg-[#1b1b18] text-white px-12 py-5 rounded-full font-bold text-xl transition-all hover:scale-110 hover:bg-[#0004ff] shadow-2xl">
+                <a href="{{ route('catalog.all') }}" 
+                class="inline-block text-[#ffffff] bg-[#1b1b18] dark:bg-white dark:text-[#1b1b18] px-12 py-5 rounded-full font-bold text-xl transition-all hover:scale-110 hover:bg-[#0004ff] dark:hover:bg-[#0004ff] dark:hover:text-white shadow-2xl">
                     VER CATÁLOGO
                 </a>
             </div>

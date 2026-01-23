@@ -102,17 +102,17 @@
 
         {{-- RESUMEN DEL PEDIDO --}}
         <div class="mt-8 flex flex-col items-end">
-            <h3 class="text-xl font-bold dark:text-white mb-2">Total: <span class="text-indigo-600 dark:text-indigo-400">{{ number_format($total, 2) }} €</span></h3>
+            <h3 class="text-xl font-bold dark:text-white mb-2">Total: <span class="text-[#0004ff] dark:text-indigo-400">{{ number_format($total, 2) }} €</span></h3>
             <p class="text-xs text-gray-500 mb-6">Impuestos incluidos. Gastos de envío calculados en el siguiente paso.</p>
             
             <div class="flex items-center gap-6">
                 {{-- BOTÓN 1: SEGUIR COMPRANDO --}}
-                <a href="{{ route('catalog.all') }}" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-sm transition flex items-center">
+                <a href="{{ route('catalog.all') }}" class="text-gray-600 dark:text-gray-400 hover:text-[#0004ff] dark:hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-sm transition flex items-center">
                     ← Seguir Comprando
                 </a>
 
                 {{-- BOTÓN 2: TRAMITAR PEDIDO --}}
-                <a href="{{ route('checkout.index') }}" class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-md font-bold hover:bg-indigo-500 transition shadow-lg transform hover:-translate-y-0.5">
+                <a href="{{ route('checkout.index') }}" class="inline-block bg-[#0004ff] dark:bg-indigo-600 text-white px-8 py-3 rounded-md font-bold hover:bg-[#0258f7] dark:hover:bg-indigo-500 transition shadow-lg transform hover:-translate-y-0.5">
                     Tramitar Pedido ➡️
                 </a>
             </div>
@@ -126,7 +126,7 @@
             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Tu carrito está vacío</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">¡Vamos a llenarlo de camisetas chulas!</p>
             <div class="mt-6">
-                <a href="{{ route('catalog.all') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <a href="{{ route('catalog.all') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#0004ff] dark:bg-indigo-700 hover:bg-[#0258f7] dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Ir a comprar
                 </a>
             </div>
