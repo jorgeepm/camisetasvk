@@ -43,7 +43,7 @@
                             <p class="text-xs text-gray-500 mt-1">🔒 Pago seguro SSL (Simulación Académica)</p>
                         </div>
 
-                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded hover:bg-indigo-500 transition duration-150 ease-in-out mt-4">
+                        <button type="submit" class="w-full bg-[#0004ff] dark:bg-indigo-700 text-white font-bold py-3 px-4 rounded hover:bg-[#0258f7] dark:hover:bg-indigo-500 transition duration-150 ease-in-out mt-4">
                             Pagar {{ number_format($total, 2) }} € Ahora
                         </button>
                     </form>
@@ -84,7 +84,7 @@
                     </ul>
                     <div class="border-t border-gray-200 dark:border-gray-600 mt-4 pt-4 flex justify-between">
                         <span class="text-base font-bold text-gray-900 dark:text-white">Total a Pagar</span>
-                        <span class="text-xl font-bold text-indigo-600">{{ number_format($total, 2) }} €</span>
+                        <span class="text-xl font-bold text-[#0004ff] dark:text-indigo-500">{{ number_format($total, 2) }} €</span>
                     </div>
                 </div>
 

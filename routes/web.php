@@ -19,8 +19,13 @@ use App\Livewire\ShopFilters;
 |--------------------------------------------------------------------------
 */
 
-// 1. HOME / DESTACADOS: Muestra el diseño "Dashboard" (Oscuro, Top 3) para todos
+// Página de bienvenida
 Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
+
+// 1. HOME / DESTACADOS: Muestra el diseño "Dashboard" (Oscuro, Top 3) para todos
+Route::get('/home', function () {
     // Lógica para sacar los 3 productos más vendidos (Copiada de tu dashboard antiguo)
     $topProductsIds = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_qty'))
         ->groupBy('product_id')
@@ -109,4 +114,38 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
 });
 
+// --- ZONA CORREGIDA DEL CHECKOUT ---
+
+// 1. PANTALLA DE RESUMEN (GET): Para ver el formulario
+Route::get('/checkout', [CheckoutController::class, 'index'])
+    ->name('checkout.index')
+    ->middleware('auth');
+
+// 2. PROCESAR PAGO (POST): Para guardar los datos cuando das al botón
+Route::post('/checkout', [CheckoutController::class, 'store'])
+    ->name('checkout.store')
+    ->middleware('auth');
+
+// 3. TICKET DE COMPRA (GET): Para ver el "Gracias" al final
+Route::get('/checkout/success/{order}', [CheckoutController::class, 'success']) // Asegúrate que el método sea 'success'
+    ->name('checkout.success')
+    ->middleware('auth');
+
+// -----------------------------------
+
+// Ruta para ver mis pedidos
+Route::get('/mis-pedidos', [OrderController::class, 'index'])
+    ->name('orders.index')
+    ->middleware('auth');
+
+// ---------
+
+// Rutas de la dirección (Address) del cliente
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/addresses', [AddressController::class, 'index'])->name('profile.addresses');
+    Route::post('/profile/addresses', [AddressController::class, 'store'])->name('profile.addresses.store');
+    Route::delete('/profile/addresses/{address}', [AddressController::class, 'destroy'])->name('profile.addresses.destroy');
+});
+
+require __DIR__.'/auth.php';
 require __DIR__.'/auth.php';

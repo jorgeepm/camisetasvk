@@ -7,12 +7,12 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+            <div class="bg-[#e3edfc] dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6 border border-gray-800 dark:border-gray-200">
                 
                 @if($orders->count() > 0)
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                        <table class="min-w-full divide-y divide-gray-400 dark:divide-gray-700">
+                            <thead class="bg-transparent dark:bg-transparent">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nº Pedido</th>
@@ -21,7 +21,7 @@
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody class="bg-transparent dark:bg-transparent divide-y divide-gray-400 dark:divide-gray-700">
                                 @foreach($orders as $order)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                                     {{-- FECHA --}}
