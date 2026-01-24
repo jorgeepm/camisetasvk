@@ -1,5 +1,5 @@
 <div>
-    {{-- 🏷️ HEADER: CATÁLOGO COMPLETO --}}
+    {{-- 🏷️ HEADER --}}
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Catálogo Completo
@@ -9,7 +9,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="flex flex-col md:flex-row gap-8">
 
-            {{-- BARRA LATERAL (FILTROS) --}}
+            {{-- BARRA LATERAL (FILTROS - SIN CAMBIOS) --}}
             <aside class="w-full md:w-1/4">
                 <div class="bg-[#1e293b] p-6 rounded-2xl shadow-lg border border-gray-700 sticky top-24">
                     <h2 class="text-white font-bold text-xl mb-6 flex items-center gap-2">
@@ -77,31 +77,44 @@
             <main class="w-full md:w-3/4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($products as $product)
-                        <div class="bg-[#1e293b] rounded-2xl overflow-hidden border border-gray-700 shadow-xl flex flex-col group transition-all hover:border-indigo-500">
+                        <div class="bg-[#1e293b] rounded-2xl overflow-hidden border border-gray-700 shadow-xl flex flex-col group transition-all hover:border-indigo-500 h-full relative">
                             
-                            {{-- 🖼️ ZONA DE IMAGEN HÍBRIDA --}}
+                            {{-- 🖼️ ZONA DE IMAGEN --}}
                             <div class="p-6 bg-white flex justify-center relative overflow-hidden h-64">
                                 @if($product->image_blob)
-                                    {{-- 1. Nueva (Blob) --}}
                                     <img src="{{ $product->image_blob }}" 
-                                        alt="{{ $product->name }}"
-                                        class="h-full w-full object-contain transition-transform group-hover:scale-110 duration-300">
-                                
+                                         alt="{{ $product->name }}"
+                                         class="h-full w-full object-contain transition-transform group-hover:scale-110 duration-500 ease-out {{ $product->stock == 0 ? 'opacity-40 grayscale blur-[1px]' : '' }}">
                                 @elseif($product->image_path)
-                                    {{-- 2. Antigua (Storage) --}}
                                     <img src="{{ asset('storage/' . $product->image_path) }}" 
-                                        alt="{{ $product->name }}"
-                                        class="h-full w-full object-contain transition-transform group-hover:scale-110 duration-300">
-                                
+                                         alt="{{ $product->name }}"
+                                         class="h-full w-full object-contain transition-transform group-hover:scale-110 duration-500 ease-out {{ $product->stock == 0 ? 'opacity-40 grayscale blur-[1px]' : '' }}">
                                 @else
-                                    {{-- 3. Si no hay nada, placeholder --}}
                                     <div class="flex items-center justify-center h-full w-full text-gray-400 bg-gray-100">
                                         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     </div>
                                 @endif
+
+                                {{-- ⭐ ETIQUETAS DE STOCK PROFESIONALES (GLASSMORPHISM) ⭐ --}}
+                                <div class="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                                    @if($product->stock == 0)
+                                        {{-- 🔴 AGOTADO PRO --}}
+                                        <div class="backdrop-blur-md bg-red-600/90 text-white px-3 py-1.5 rounded-lg shadow-lg border border-red-500/50 flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                            <span class="text-[10px] font-bold uppercase tracking-widest">Agotado</span>
+                                        </div>
+                                    @elseif($product->stock <= 5)
+                                        {{-- 🟡 ÚLTIMAS UNIDADES PRO --}}
+                                        <div class="backdrop-blur-md bg-amber-400/90 text-amber-950 px-3 py-1.5 rounded-lg shadow-lg border border-amber-300/50 flex items-center gap-1.5 animate-pulse">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                            <span class="text-[10px] font-bold uppercase tracking-widest">Quedan {{ $product->stock }}</span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
 
-                            <div class="p-5 flex-1 flex flex-col justify-between text-white">
+                            {{-- INFO DEL PRODUCTO --}}
+                            <div class="p-5 flex-1 flex flex-col justify-between text-white relative">
                                 <div>
                                     <h3 class="font-bold text-lg leading-tight h-14 overflow-hidden">{{ $product->name }}</h3>
                                     <p class="text-indigo-400 text-xs font-bold uppercase mt-2">
@@ -109,27 +122,28 @@
                                     </p>
                                 </div>
 
-                                <div class="flex justify-between items-center mt-6">
+                                <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
                                     <span class="text-2xl font-black">{{ number_format($product->price, 2) }}€</span>
                                     
-                                    {{-- 🔥 LÓGICA DE BOTONES: ADMIN vs CLIENTE 🔥 --}}
+                                    {{-- 🔥 BOTONES PROFESIONALES 🔥 --}}
                                     @if(Auth::check() && Auth::user()->role === 'admin')
-                                        
-                                        {{-- 🔧 ADMIN: BOTÓN EDITAR --}}
                                         <a href="{{ route('products.edit', $product->id) }}" 
                                         class="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-500 text-gray-300 text-xs font-bold uppercase tracking-wide hover:bg-gray-700 transition-colors shadow-sm">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                             Editar
                                         </a>
-
                                     @else
-                                        
-                                        {{-- 🛒 CLIENTE: BOTÓN PERSONALIZAR --}}
-                                        <a href="{{ route('products.show', $product->id) }}"
-                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors text-center shadow-lg transform hover:-translate-y-0.5">
-                                            Personalizar
-                                        </a>
-
+                                        @if($product->stock > 0)
+                                            <a href="{{ route('products.show', $product->id) }}"
+                                            class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/30 transform hover:-translate-y-0.5 border border-transparent">
+                                                Personalizar
+                                            </a>
+                                        @else
+                                            {{-- 🚫 BOTÓN AGOTADO PRO (Estilo "Locked") --}}
+                                            <button disabled class="bg-gray-800/50 backdrop-blur-sm text-gray-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider cursor-not-allowed border border-gray-700 flex items-center gap-2">
+                                                <span>Sin Stock</span>
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

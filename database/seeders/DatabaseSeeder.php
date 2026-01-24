@@ -118,5 +118,14 @@ class DatabaseSeeder extends Seeder
             'stock' => 50,
             'image_blob' => $getBlob('milan-2007.jpg')
         ]);
+
+        Product::create([
+            'category_id' => $catActual->id,
+            'name' => 'FC Barcelona 2025 Local',
+            'description' => 'La primera equipación oficial del Barça para la temporada 2024/25.',
+            'price' => 89.99,
+            'stock' => 50,
+            'image_blob' => $getBlob('barca.jpg') // <--- Busca en public/seeds/barca.jpg
+        ]);
     }
 }
