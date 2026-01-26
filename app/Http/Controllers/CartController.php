@@ -22,7 +22,7 @@ class CartController extends Controller
         return view('cart.index', compact('cart', 'total'));
     }
 
-    // 2. Añadir producto al carrito
+    // 2. Añadir producto al carrito (Simple)
     public function addToCart($id)
     {
         $product = Product::findOrFail($id);
@@ -42,7 +42,8 @@ class CartController extends Controller
                 "name" => $product->name,
                 "quantity" => 1,
                 "price" => $product->price,
-                "image_path" => $product->image_path
+                "image_path" => $product->image_path,
+                "image_blob" => $product->image_blob // <--- ¡AQUI ESTABA EL FALLO! Agregado.
             ];
         }
 
@@ -93,17 +94,16 @@ class CartController extends Controller
     }
 
     // ==========================================
-    // AÑADIR PRODUCTO PERSONALIZADO
+    // AÑADIR PRODUCTO PERSONALIZADO (El que usas desde el detalle)
     // ==========================================
     public function addToCartCustomized(Request $request, $id)
     {
         // 1. Verificación de seguridad
         $request->validate([
-            'custom_name'   => 'nullable|string|max:15|regex:/^[a-zA-Z\s]+$/', // Máx 15 caracteres, solo letras
-            'custom_number' => 'nullable|integer|between:1,99',               // Solo números del 1 al 99
-            'size'          => 'required|string|in:S,M,L,XL',                 // Solo tallas válidas
+            'custom_name'   => 'nullable|string|max:15|regex:/^[a-zA-Z\s]+$/', 
+            'custom_number' => 'nullable|integer|between:1,99',             
+            'size'          => 'required|string|in:S,M,L,XL',                 
         ], [
-            // Mensajes personalizados opcionales
             'custom_name.max'       => 'El nombre no puede tener más de 15 letras.',
             'custom_name.regex'     => 'El nombre solo puede contener letras.',
             'custom_number.between' => 'El dorsal debe ser un número entre 1 y 99.',
@@ -112,7 +112,7 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
-        // Creamos una clave única para que no se mezclen camisetas con distintos nombres
+        // Creamos una clave única
         $cartKey = $id . '_' . $request->custom_name . '_' . $request->custom_number . '_' . $request->size;
 
         $cart[$cartKey] = [
@@ -121,13 +121,17 @@ class CartController extends Controller
             "quantity" => 1,
             "price" => $product->price,
             "image_path" => $product->image_path,
-            // Datos que luego el CheckoutController guardará en la base de datos
+            "image_blob" => $product->image_blob, // <--- ¡AQUI TAMBIÉN FALTABA! Agregado.
+            
+            // Datos de personalización
             "size" => $request->size,
             "custom_name" => $request->custom_name,
             "custom_number" => $request->custom_number
         ];
 
         session()->put('cart', $cart);
+        
+        // Redirigimos al carrito para ver el resultado (Más profesional que recargar)
         return redirect()->route('cart.index')->with('success', 'Producto personalizado añadido al carrito.');
     }
 }

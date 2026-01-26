@@ -6,20 +6,54 @@
         </h2>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {{-- CONTENEDOR PRINCIPAL CON ESTADO ALPINE (x-data) --}}
+    {{-- 'showMobileFilters' controla si se ve el menú en el móvil --}}
+    <div x-data="{ showMobileFilters: false }" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        {{-- BOTÓN DE FILTROS MÓVIL (Solo visible en pantallas pequeñas) --}}
+        <div class="md:hidden mb-6">
+            <button @click="showMobileFilters = true" 
+                    class="w-full flex justify-center items-center gap-2 bg-[#0004ff] text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition uppercase tracking-wider">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filtrar Productos
+            </button>
+        </div>
+
         <div class="flex flex-col md:flex-row gap-8">
 
-            {{-- BARRA LATERAL (FILTROS - SIN CAMBIOS) --}}
-            <aside class="w-full md:w-1/4">
-                <div class="bg-[#1e293b] p-6 rounded-2xl shadow-lg border border-gray-700 sticky top-24">
-                    <h2 class="text-white font-bold text-xl mb-6 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                            </path>
-                        </svg>
-                        Filtros
-                    </h2>
+            {{-- 
+                🛠️ BARRA LATERAL (FILTROS) 
+                - En PC (md:block): Se ve siempre normal (static) y ocupa 1/4.
+                - En Móvil: Se comporta como un modal fijo (fixed inset-0) que tapa la pantalla.
+            --}}
+            <aside class="md:w-1/4 fixed inset-0 z-50 md:static md:z-auto transition-transform duration-300 ease-in-out transform"
+                   :class="showMobileFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+                
+                {{-- FONDO OSCURO PARA MÓVIL (Solo visual, el click para cerrar está en el div hermano) --}}
+                <div class="md:hidden absolute inset-0 bg-black/80 backdrop-blur-sm -z-10" @click="showMobileFilters = false"></div>
+
+                <div class="bg-[#1e293b] p-6 h-full md:h-auto md:rounded-2xl shadow-lg border-r md:border border-gray-700 overflow-y-auto md:sticky md:top-24 w-[85%] md:w-full max-w-sm md:max-w-none">
+                    
+                    {{-- CABECERA MÓVIL (Para cerrar) --}}
+                    <div class="flex justify-between items-center mb-6 md:mb-6">
+                        <h2 class="text-white font-bold text-xl flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                                </path>
+                            </svg>
+                            Filtros
+                        </h2>
+                        
+                        {{-- Botón X solo en móvil --}}
+                        <button @click="showMobileFilters = false" class="md:hidden text-gray-400 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
 
                     <div class="mb-6">
                         <label class="text-gray-400 text-xs uppercase font-bold mb-2 block">Ordenar por</label>
@@ -69,6 +103,11 @@
                             </path>
                         </svg>
                         Limpiar filtros
+                    </button>
+                    
+                    {{-- BOTÓN VER RESULTADOS (SOLO MÓVIL) --}}
+                    <button @click="showMobileFilters = false" class="md:hidden w-full mt-4 py-3 rounded-lg bg-[#0004ff] text-white font-bold text-xs uppercase shadow-lg hover:bg-blue-700 transition-all tracking-widest">
+                        Ver Resultados
                     </button>
                 </div>
             </aside>

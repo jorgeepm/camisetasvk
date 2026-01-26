@@ -80,4 +80,17 @@ class ShoppingCart extends Component
         // Recalculamos el total si es necesario para la vista
         $this->total = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
     }
+    
+    public function clearCart()
+    {
+        // 1. Borrar de la sesión
+        session()->forget('cart');
+        
+        // 2. Actualizar la variable pública para que la vista se limpie
+        $this->cart = [];
+        $this->total = 0;
+        
+        // 3. Emitir evento por si hay un contador en el menú que deba ponerse a 0
+        $this->dispatch('cartUpdated');
+    }
 }
