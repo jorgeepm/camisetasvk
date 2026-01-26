@@ -1,74 +1,78 @@
 <x-guest-layout>
-    <div class="min-h-screen flex flex-col items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-[#FDFDFC] to-[#9cfcff] dark:from-gray-900 dark:via-gray-900 dark:to-indigo-700 p-6 font-sans antialiased">
-        
-        <div class="absolute top-8 left-8">
-            <a href="/" class="text-sm font-bold text-black dark:text-gray-100 hover:text-[#0004ff] transition-colors flex items-center gap-2">
-                ← VOLVER A INICIO
-            </a>
+    {{-- ENCABEZADO DEL LOGIN --}}
+    <div class="text-center mb-8">
+        <h2 class="text-4xl font-black text-[#1b1b18] dark:text-white leading-none uppercase tracking-tighter">
+            HOLA DE <br> <span class="text-[#0004ff] dark:text-indigo-500">NUEVO</span>
+        </h2>
+        <p class="mt-2 text-gray-500 dark:text-gray-400 text-sm font-medium tracking-wide">
+            Entra en tu zona VIP de Camisetas FC
+        </p>
+    </div>
+
+    {{-- ESTATUS DE SESIÓN (Errores o mensajes) --}}
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
+        @csrf
+
+        {{-- EMAIL --}}
+        <div>
+            <label class="block text-xs font-black uppercase tracking-widest text-[#1b1b18] dark:text-gray-300 mb-2 ml-1">
+                Email
+            </label>
+            <input id="email" type="email" name="email" :value="old('email')" required autofocus 
+                   class="w-full px-5 py-4 bg-gray-50 dark:bg-[#0a0a0a] border-2 border-transparent focus:border-[#0004ff] dark:focus:border-indigo-500 rounded-2xl shadow-inner focus:ring-0 transition-all text-[#1b1b18] dark:text-white placeholder-gray-400 font-medium"
+                   placeholder="tu@email.com">
+            <x-input-error :messages="$errors->get('email')" class="mt-2 font-bold" />
         </div>
 
-        <div class="mb-8">
-            <a href="/">
-                <x-logo class="h-24 w-auto drop-shadow-lg animate-pulse" style="animation-duration: 4s;" />
-            </a>
-        </div>
-
-        <div class="w-full sm:max-w-md bg-white/70 dark:bg-[#161615]/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] dark:shadow-none border border-white/20">
-            
-            <div class="text-center mb-10">
-                <h2 class="text-4xl font-black text-[#1b1b18] dark:text-white leading-none uppercase tracking-tighter">
-                    HOLA DE <br> <span class="text-[#0004ff] dark:text-indigo-700">NUEVO</span>
-                </h2>
-                <p class="mt-2 text-gray-500 dark:text-gray-400 text-sm font-medium">Entra en tu zona VIP de Camisetas FC</p>
+        {{-- CONTRASEÑA --}}
+        <div>
+            <div class="flex justify-between ml-1 mb-2">
+                <label class="block text-xs font-black uppercase tracking-widest text-[#1b1b18] dark:text-gray-300">
+                    Contraseña
+                </label>
             </div>
-
-            <x-auth-session-status class="mb-4" :status="session('status')" />
-
-            <form method="POST" action="{{ route('login') }}" class="space-y-6">
-                @csrf
-
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-[#1b1b18] dark:text-gray-300 mb-2 ml-1">Email</label>
-                    <input id="email" type="email" name="email" :value="old('email')" required autofocus 
-                           class="w-full px-5 py-4 bg-white dark:bg-[#0a0a0a] border-none rounded-2xl shadow-inner focus:ring-2 focus:ring-[#0004ff] focus:dark:ring-indigo-700 transition-all text-[#1b1b18] dark:text-white"
-                           placeholder="tu@email.com">
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
-
-                <div>
-                    <div class="flex justify-between ml-1">
-                        <label class="block text-xs font-black uppercase tracking-widest text-[#1b1b18] dark:text-gray-300 mb-2">Contraseña</label>
-                    </div>
-                    <input id="password" type="password" name="password" required 
-                           class="w-full px-5 py-4 bg-white dark:bg-[#0a0a0a] border-none rounded-2xl shadow-inner focus:ring-2 focus:ring-[#0004ff] focus:dark:ring-indigo-700 transition-all text-[#1b1b18] dark:text-white"
-                           placeholder="••••••••">
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                </div>
-
-                <div class="flex items-center justify-between px-1">
-                    <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                        <input id="remember_me" type="checkbox" class="rounded-lg border-gray-300 text-indigo-700 focus:ring-indigo-700 shadow-sm" name="remember">
-                        <span class="ms-2 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-tighter">{{ __('Recuérdame') }}</span>
-                    </label>
-                    
-                    @if (Route::has('password.request'))
-                        <a class="text-xs font-bold text-gray-400 hover:text-[#0004ff] hover:dark:text-indigo-700 transition-colors uppercase tracking-tighter" href="{{ route('password.request') }}">
-                            {{ __('¿Olvidaste la clave?') }}
-                        </a>
-                    @endif
-                </div>
-
-                <div class="pt-4">
-                    <button class="w-full bg-[#1b1b18] dark:bg-white dark:text-black text-white py-5 rounded-3xl font-black text-xl tracking-widest hover:bg-[#0004ff] dark:hover:bg-indigo-700 dark:hover:text-white hover:-translate-y-1 transition-all shadow-[0_10px_30px_rgba(0,4,255,0.3)]">
-                        LOG IN
-                    </button>
-                </div>
-            </form>
+            <input id="password" type="password" name="password" required 
+                   class="w-full px-5 py-4 bg-gray-50 dark:bg-[#0a0a0a] border-2 border-transparent focus:border-[#0004ff] dark:focus:border-indigo-500 rounded-2xl shadow-inner focus:ring-0 transition-all text-[#1b1b18] dark:text-white placeholder-gray-400 font-medium"
+                   placeholder="••••••••">
+            <x-input-error :messages="$errors->get('password')" class="mt-2 font-bold" />
         </div>
 
-        <p class="mt-8 text-sm font-bold text-gray-500 dark:text-gray-400">
-            ¿AÚN NO ESTÁS EN EL EQUIPO? 
-            <a href="{{ route('register') }}" class="text-[#0004ff] dark:text-white hover:underline ml-1 uppercase">Crea tu cuenta</a>
+        {{-- RECORDAR Y OLVIDÉ CLAVE --}}
+        <div class="flex items-center justify-between px-1">
+            <label for="remember_me" class="inline-flex items-center cursor-pointer group">
+                <div class="relative">
+                    <input id="remember_me" type="checkbox" class="sr-only peer" name="remember">
+                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-[#0004ff]"></div>
+                </div>
+                <span class="ms-2 text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 uppercase tracking-tighter transition-colors">
+                    Recuérdame
+                </span>
+            </label>
+            
+            @if (Route::has('password.request'))
+                <a class="text-xs font-black text-gray-400 hover:text-[#0004ff] dark:hover:text-indigo-400 transition-colors uppercase tracking-tight" href="{{ route('password.request') }}">
+                    ¿Olvidaste la clave?
+                </a>
+            @endif
+        </div>
+
+        {{-- BOTÓN LOG IN --}}
+        <div class="pt-2">
+            <button class="w-full bg-[#1b1b18] dark:bg-white dark:text-black text-white py-4 rounded-2xl font-black text-xl tracking-widest hover:bg-[#0004ff] dark:hover:bg-indigo-600 dark:hover:text-white hover:-translate-y-1 transition-all shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_30px_rgba(0,4,255,0.4)]">
+                ENTRAR ➜
+            </button>
+        </div>
+    </form>
+
+    {{-- FOOTER --}}
+    <div class="mt-8 text-center">
+        <p class="text-xs font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider">
+            ¿Aún no estás en el equipo? 
+            <a href="{{ route('register') }}" class="text-[#0004ff] dark:text-indigo-400 hover:underline ml-1 font-black">
+                Crea tu cuenta
+            </a>
         </p>
     </div>
 </x-guest-layout>

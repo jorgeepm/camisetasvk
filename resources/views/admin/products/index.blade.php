@@ -24,6 +24,46 @@
                 </div>
             @endif
 
+            {{-- 🔍 BARRA DE FILTROS ADMIN --}}
+            <div class="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <form method="GET" action="{{ route('products.index') }}" class="flex flex-col md:flex-row gap-4 items-end">
+                    
+                    {{-- Buscador --}}
+                    <div class="w-full md:w-1/3">
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Buscar por nombre</label>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Ej: Real Madrid..." 
+                               class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 text-sm shadow-sm">
+                    </div>
+
+                    {{-- Selector Categoría --}}
+                    <div class="w-full md:w-1/4">
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Filtrar Categoría</label>
+                        <select name="category_id" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 text-sm shadow-sm">
+                            <option value="">Todas las categorías</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Botones --}}
+                    <div class="flex gap-2">
+                        <button type="submit" class="bg-gray-800 dark:bg-indigo-600 hover:bg-gray-700 text-white px-5 py-2 rounded-md text-sm font-bold transition shadow-md">
+                            Filtrar
+                        </button>
+                        
+                        @if(request('search') || request('category_id'))
+                            <a href="{{ route('products.index') }}" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md text-sm font-bold transition">
+                                Limpiar
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
+            {{-- TABLA DE RESULTADOS --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="overflow-x-auto">
@@ -39,20 +79,19 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach($products as $product)
+                                @forelse($products as $product)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
-                                    {{-- 🖼️ IMAGEN ARREGLADA (Híbrida) --}}
+                                    {{-- IMAGEN --}}
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($product->image_blob)
-                                            {{-- 1. Nueva (Blob) --}}
-                                            <img src="{{ $product->image_blob }}" alt="img" class="h-12 w-12 object-cover rounded border border-gray-300 dark:border-gray-600">
-                                        @elseif($product->image_path)
-                                            {{-- 2. Antigua (Storage) --}}
-                                            <img src="{{ asset('storage/' . $product->image_path) }}" alt="img" class="h-12 w-12 object-cover rounded border border-gray-300 dark:border-gray-600">
-                                        @else
-                                            {{-- 3. Placeholder --}}
-                                            <div class="h-12 w-12 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">Sin Foto</div>
-                                        @endif
+                                        <div class="h-12 w-12 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-600">
+                                            @if($product->image_blob)
+                                                <img src="{{ $product->image_blob }}" alt="img" class="h-full w-full object-contain">
+                                            @elseif($product->image_path)
+                                                <img src="{{ asset('storage/' . $product->image_path) }}" alt="img" class="h-full w-full object-contain">
+                                            @else
+                                                <span class="text-[10px] text-gray-400">Sin foto</span>
+                                            @endif
+                                        </div>
                                     </td>
                                     
                                     {{-- NOMBRE --}}
@@ -63,7 +102,7 @@
                                     
                                     {{-- STOCK --}}
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->stock < 10 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->stock < 5 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">
                                             {{ $product->stock }} u.
                                         </span>
                                     </td>
@@ -90,7 +129,13 @@
                                         </div>
                                     </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
+                                        No se encontraron camisetas con esos filtros.
+                                    </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

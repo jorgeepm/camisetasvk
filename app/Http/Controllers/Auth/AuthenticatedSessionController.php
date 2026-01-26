@@ -28,7 +28,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // 👇 CAMBIO AQUÍ: Redirección personalizada
+        
+        // Si quieres que SOLO el admin vaya al catálogo:
+        if ($request->user()->role === 'admin') {
+            return redirect()->route('catalog.all');
+        }
+
+        // Si quieres que los usuarios normales TAMBIÉN vayan al catálogo 
+        // (lo más normal en una tienda), usa esta línea:
+        return redirect()->route('catalog.all');
+
+        // Si prefieres que los usuarios normales vayan al Dashboard original,
+        // borra la línea de arriba y descomenta la de abajo:
+        // return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**

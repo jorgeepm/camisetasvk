@@ -3,154 +3,201 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             {{-- 🔙 BOTÓN VOLVER --}}
-            <div class="mb-6">
+            <div class="mb-8">
                 <a href="{{ route('catalog.all') }}"
-                    class="inline-flex items-center text-gray-900 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-100 font-medium transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Volver al catálogo
+                    class="group inline-flex items-center text-gray-500 hover:text-indigo-600 font-medium transition duration-200">
+                    <div class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center mr-3 group-hover:shadow-md transition-all border border-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </div>
+                    <span>Volver al catálogo</span>
                 </a>
             </div>
 
             {{-- BLOQUE DE ERRORES --}}
             @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 shadow-md rounded-r-lg">
-                    <p class="font-bold">Hay errores en la personalización:</p>
-                    <ul class="mt-2 list-disc list-inside text-sm">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-xl flex items-start gap-3">
+                    <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-bold">Revisa los siguientes errores:</p>
+                        <ul class="mt-1 list-disc list-inside text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             @endif
 
-            <div class="bg-gray-100 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl shadow-gray-200/50 dark:shadow-none sm:rounded-3xl grid grid-cols-1 lg:grid-cols-2 gap-0 border border-gray-100 dark:border-gray-700">
 
-                {{-- COLUMNA IZQUIERDA: IMAGEN Y DETALLES --}}
-                <div class="flex flex-col items-center">
+                {{-- 🖼️ COLUMNA IZQUIERDA: IMAGEN (Con efectos PRO) --}}
+                <div class="p-8 lg:p-12 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900/50 relative">
                     
-                    {{-- 🖼️ IMAGEN ARREGLADA (Híbrida: Blob + Path) --}}
-                    <div class="w-full flex justify-center mb-6">
-                        @if($product->image_blob)
-                            {{-- 1. Nueva (Base64) --}}
-                            <img src="{{ $product->image_blob }}" 
-                                 alt="{{ $product->name }}" 
-                                 class="w-full max-w-sm h-auto object-contain rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
-                        @elseif($product->image_path)
-                            {{-- 2. Antigua (Storage) --}}
-                            <img src="{{ asset('storage/' . $product->image_path) }}" 
-                                 alt="{{ $product->name }}" 
-                                 class="w-full max-w-sm h-auto object-contain rounded-xl shadow-lg transition-transform hover:scale-105 duration-300">
+                    <div class="relative w-full max-w-md aspect-square flex items-center justify-center">
+                        
+                        {{-- IMAGEN CON LÓGICA HÍBRIDA --}}
+                        @php
+                            $imgSrc = $product->image_blob ?? ($product->image_path ? asset('storage/' . $product->image_path) : null);
+                        @endphp
+
+                        @if($imgSrc)
+                            <img src="{{ $imgSrc }}" alt="{{ $product->name }}" 
+                                 class="w-full h-full object-contain drop-shadow-2xl transition-all duration-500 {{ $product->stock == 0 ? 'grayscale opacity-60 blur-[1px]' : 'hover:scale-105' }}">
                         @else
-                            {{-- 3. Placeholder --}}
-                            <div class="w-full max-w-sm h-64 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center shadow-inner">
-                                <span class="text-gray-400 font-bold">Sin Imagen</span>
+                            <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100 rounded-2xl">
+                                <span class="font-bold uppercase tracking-widest">Sin Imagen</span>
+                            </div>
+                        @endif
+
+                        {{-- 🚫 SELLO DE AGOTADO (OVERLAY) --}}
+                        @if($product->stock == 0)
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div class="bg-black/80 backdrop-blur-sm text-white px-8 py-4 rounded-2xl border border-white/20 shadow-2xl transform -rotate-12">
+                                    <span class="text-2xl font-black tracking-[0.2em] uppercase">Sold Out</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- ⚡ AVISO FLOTANTE DE STOCK BAJO --}}
+                        @if($product->stock > 0 && $product->stock <= 5)
+                            <div class="absolute top-0 right-0">
+                                <span class="bg-amber-400 text-amber-950 text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-pulse flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    ¡Solo quedan {{ $product->stock }}!
+                                </span>
                             </div>
                         @endif
                     </div>
-
-                    <h2 class="mt-4 text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight text-center">
-                        {{ $product->name }}
-                    </h2>
-
-                    {{-- 💶 PRECIO EN EUROS --}}
-                    <p class="text-2xl text-[#0004ff] dark:text-indigo-400 font-bold mt-2">{{ number_format($product->price, 2) }} €</p>
-
-                    <p class="mt-4 text-gray-600 dark:text-gray-400 text-center leading-relaxed max-w-md">
-                        {{ $product->description }}
-                    </p>
                 </div>
 
-                {{-- COLUMNA DERECHA: FORMULARIO --}}
-                <div class="bg-gray-50 dark:bg-gray-900 p-8 rounded-2xl border border-gray-700 dark:border-gray-700 shadow-inner h-fit">
-                    <h3 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#0004ff] dark:text-indigo-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Personaliza tu Camiseta
-                    </h3>
+                {{-- 📝 COLUMNA DERECHA: INFO Y FORMULARIO --}}
+                <div class="p-8 lg:p-12 bg-white dark:bg-gray-800 flex flex-col justify-center">
+                    
+                    <div class="mb-2">
+                        <span class="text-indigo-500 font-bold tracking-wider uppercase text-xs bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
+                            {{ $product->category->name ?? 'Colección Oficial' }}
+                        </span>
+                    </div>
 
-                    <form action="{{ route('products.customize', $product->id) }}" method="POST">
+                    <h1 class="text-4xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+                        {{ $product->name }}
+                    </h1>
+
+                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed text-lg mb-8">
+                        {{ $product->description }}
+                    </p>
+
+                    {{-- PRECIO Y ESTADO --}}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-700 mb-8">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-400 font-bold uppercase">Precio</span>
+                            <span class="text-3xl font-black text-gray-900 dark:text-white">{{ number_format($product->price, 2) }}€</span>
+                        </div>
+
+                        {{-- ETIQUETA DE ESTADO (PILL) --}}
+                        <div>
+                            @if($product->stock == 0)
+                                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold bg-rose-50 text-rose-600 border border-rose-100">
+                                    <div class="w-2 h-2 rounded-full bg-rose-500"></div> Agotado
+                                </span>
+                            @elseif($product->stock <= 5)
+                                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold bg-amber-50 text-amber-600 border border-amber-100">
+                                    <div class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></div> Stock Bajo
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div> Disponible
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- FORMULARIO DE PERSONALIZACIÓN --}}
+                    <form action="{{ route('products.customize', $product->id) }}" method="POST" class="space-y-6">
                         @csrf
 
-                        {{-- TALLA --}}
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selecciona tu
-                                Talla:</label>
-                            <div class="relative">
-                                <select name="size" required
-                                    class="block w-full pl-3 pr-10 py-3 text-base border-gray-700 dark:border-gray-600 focus:outline-none focus:ring-[#0004ff] dark:focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-white shadow-sm">
-                                    <option value="S">S - Pequeña</option>
-                                    <option value="M">M - Mediana</option>
-                                    <option value="L">L - Grande</option>
-                                    <option value="XL">XL - Extra Grande</option>
-                                </select>
+                        <div class="space-y-6 {{ $product->stock == 0 ? 'opacity-50 pointer-events-none grayscale' : '' }}">
+                            {{-- TALLA --}}
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">Selecciona Talla</label>
+                                <div class="relative">
+                                    <select name="size" required {{ $product->stock == 0 ? 'disabled' : '' }}
+                                        class="block w-full pl-4 pr-10 py-3.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl text-gray-500 dark:text-gray-300 shadow-sm transition-shadow appearance-none cursor-pointer font-medium">
+                                        <option value="" disabled selected>Elige tu talla...</option>
+                                        <option value="S">S - Pequeña</option>
+                                        <option value="M">M - Mediana</option>
+                                        <option value="L">L - Grande</option>
+                                        <option value="XL">XL - Extra Grande</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-6">
+                                {{-- NOMBRE (2/3 ancho) --}}
+                                <div class="col-span-2">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Nombre</label>
+                                        <span id="char-count" class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">0/15</span>
+                                    </div>
+                                    <input type="text" id="custom_name" name="custom_name" maxlength="15" {{ $product->stock == 0 ? 'disabled' : '' }}
+                                        placeholder="TU NOMBRE"
+                                        class="uppercase w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium 
+                                               text-gray-500 placeholder-gray-500 dark:text-gray-300 dark:placeholder-gray-500">
+                                </div>
+
+                                {{-- NÚMERO (1/3 ancho) --}}
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">Dorsal</label>
+                                    <input type="number" name="custom_number" min="1" max="99" placeholder="10" {{ $product->stock == 0 ? 'disabled' : '' }}
+                                        class="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-center font-medium 
+                                               text-gray-500 placeholder-gray-500 dark:text-gray-300 dark:placeholder-gray-500">
+                                </div>
                             </div>
                         </div>
 
-                        {{-- NOMBRE --}}
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre en la
-                                    espalda:</label>
-                                <span id="char-count"
-                                    class="text-xs text-gray-500 font-mono bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">0/15</span>
-                            </div>
-                            <input type="text" id="custom_name" name="custom_name" maxlength="15"
-                                placeholder="Ej: MESSI"
-                                class="uppercase w-full rounded-lg border-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#0004ff] dark:focus:ring-indigo-500 focus:border-transparent transition shadow-sm py-3">
-                            <p class="mt-1 text-xs text-gray-400">Solo letras y espacios.</p>
+                        {{-- BOTÓN DE ACCIÓN (GRANDE) --}}
+                        <div class="pt-4">
+                            @if($product->stock > 0)
+                                <button type="submit"
+                                    class="w-full group bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center gap-3">
+                                    <span class="text-lg tracking-wide">Añadir a la cesta</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                </button>
+                            @else
+                                <button type="button" disabled
+                                    class="w-full bg-gray-100 text-gray-400 font-bold py-4 px-8 rounded-2xl border-2 border-dashed border-gray-200 cursor-not-allowed flex justify-center items-center gap-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    <span class="text-lg tracking-wide uppercase">Producto Agotado</span>
+                                </button>
+                                <p class="text-center text-xs text-gray-400 mt-3 font-medium">Suscríbete al boletín para saber cuándo vuelve.</p>
+                            @endif
                         </div>
-
-                        {{-- NÚMERO --}}
-                        <div class="mb-8">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Número
-                                (1-99):</label>
-                            <input type="number" name="custom_number" min="1" max="99" placeholder="10"
-                                class="w-full rounded-lg border-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-[#0004ff] dark:focus:ring-indigo-500 focus:border-transparent transition shadow-sm py-3">
-                        </div>
-
-                        {{-- BOTÓN COMPRAR --}}
-                        <button type="submit"
-                            class="w-full bg-[#0004ff] dark:bg-indigo-700 hover:bg-[#0258f7] dark:hover:bg-indigo-500 text-white font-bold py-4 px-6 rounded-xl transition duration-200 shadow-lg transform hover:-translate-y-0.5 flex justify-center items-center">
-                            <span>Añadir al Carrito</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Script para el contador de caracteres --}}
+    {{-- Script JS contador caracteres --}}
     <script>
         const input = document.getElementById('custom_name');
         const count = document.getElementById('char-count');
-
         if (input && count) {
             input.addEventListener('input', () => {
-                // Forzamos mayúsculas visualmente
                 input.value = input.value.toUpperCase();
-
                 const length = input.value.length;
                 count.textContent = `${length}/15`;
-
-                if (length >= 15) {
-                    count.classList.add('text-red-500', 'font-bold');
-                    count.classList.remove('text-gray-500');
-                } else {
-                    count.classList.remove('text-red-500', 'font-bold');
-                    count.classList.add('text-gray-500');
-                }
+                if (length >= 15) count.classList.add('text-rose-500');
+                else count.classList.remove('text-rose-500');
             });
         }
     </script>

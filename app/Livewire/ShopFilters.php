@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url; // <--- IMPORTANTE: Importar esto
 use App\Models\Product;
 use App\Models\Category;
 
@@ -11,11 +12,20 @@ class ShopFilters extends Component
 {
     use WithPagination;
 
-    // Variables públicas
+    // Variables públicas con #[Url] para sincronizar con la barra de direcciones
+    #[Url]
     public $search = '';
+
+    #[Url]
     public $categoryId = '';
+
+    #[Url]
     public $minPrice = 0;
+
+    #[Url]
     public $maxPrice = 500;
+
+    #[Url]
     public $sortOrder = 'desc'; // Por defecto de mayor a menor
     
     // Esta variable fuerza el refresco visual de los inputs al limpiar
@@ -56,4 +66,4 @@ class ShopFilters extends Component
             'categories' => Category::all()
         ])->layout('layouts.app');
     }
-} 
+}
