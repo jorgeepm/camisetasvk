@@ -10,6 +10,8 @@ class ShoppingCart extends Component
     public $cart = [];
     public $total = 0;
 
+    protected $listeners = ['cartUpdated' => 'mount'];
+
     // Se ejecuta al cargar el componente
     public function mount()
     {
@@ -32,10 +34,10 @@ class ShoppingCart extends Component
     }
 
     // Incrementar cantidad (+)
-    public function increment($id)
+    public function increment($key)
     {
-        // 1. Extraemos el ID real del producto guardado en los detalles
-        $productId = $this->cart[$id]['id'] ?? null;
+        // 1. Extraemos el ID real del producto (base de datos)
+        $productId = $this->cart[$key]['id'] ?? null;
         $product = Product::find($productId);
 
         if (!$product) {
@@ -43,42 +45,57 @@ class ShoppingCart extends Component
             return;
         }
 
-        // 2. Verificación de stock en tiempo real
-        if ($this->cart[$id]['quantity'] + 1 > $product->stock) {
-            session()->flash('error', 'Stock insuficiente para ' . $product->name);
-            return;
+        // 2. 🔥 CORRECCIÓN CRÍTICA: Verificación de stock GLOBAL 🔥
+        // Sumamos cuántas unidades de este ID hay en TOTAL en el carrito (sumando todas las tallas)
+        $quantityInCart = 0;
+        foreach ($this->cart as $item) {
+            if ($item['id'] == $productId) {
+                $quantityInCart += $item['quantity'];
+            }
+        }
+
+        // Si lo que ya hay en el carrito + 1 supera el stock real...
+        if ($quantityInCart + 1 > $product->stock) {
+            session()->flash('error', 'Stock insuficiente. Solo quedan ' . $product->stock . ' unidades.');
+            return; // Detenemos la función aquí
         }
 
         // 3. Actualizamos cantidad y sesión
-        $this->cart[$id]['quantity']++;
+        $this->cart[$key]['quantity']++;
         $this->updateSession();
     }
+
     // Decrementar cantidad (-)
-    public function decrement($id)
+    public function decrement($key)
     {
-        if (isset($this->cart[$id])) {
-            if ($this->cart[$id]['quantity'] > 1) {
-                $this->cart[$id]['quantity']--;
+        if (isset($this->cart[$key])) {
+            if ($this->cart[$key]['quantity'] > 1) {
+                $this->cart[$key]['quantity']--;
             } else {
-                unset($this->cart[$id]);
+                unset($this->cart[$key]);
             }
             $this->updateSession();
         }
     }
 
     // Eliminar producto 🗑️
-    public function remove($id)
+    public function remove($key)
     {
-        unset($this->cart[$id]);
-        $this->updateSession();
+        if (isset($this->cart[$key])) {
+            unset($this->cart[$key]);
+            $this->updateSession();
+            session()->flash('success', 'Producto eliminado.');
+        }
     }
 
     // Guardar estado en sesión
     private function updateSession()
     {
         session()->put('cart', $this->cart);
-        // Recalculamos el total si es necesario para la vista
-        $this->total = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        // Recalculamos el total
+        $this->calculateTotal();
+        // Emitimos evento por si hay contadores en el menú
+        $this->dispatch('cartUpdated');
     }
     
     public function clearCart()
@@ -90,7 +107,7 @@ class ShoppingCart extends Component
         $this->cart = [];
         $this->total = 0;
         
-        // 3. Emitir evento por si hay un contador en el menú que deba ponerse a 0
+        // 3. Emitir evento
         $this->dispatch('cartUpdated');
     }
 }

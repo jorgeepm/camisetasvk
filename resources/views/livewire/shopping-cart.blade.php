@@ -1,15 +1,25 @@
 <div class="p-6">
-    {{-- Mensajes de error (Stock) --}}
-    @if (session()->has('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            {{ session('error') }}
-        </div>
-    @endif
+    
+    {{-- 🔥 MENSAJES FLOTANTES MODERNOS (Sustituyen al bloque rojo) --}}
+    <div class="fixed top-24 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+        @if (session()->has('error'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+                 x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-10" x-transition:enter-end="opacity-100 translate-x-0"
+                 x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-10"
+                 class="pointer-events-auto flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 border border-red-300 dark:border-red-800 shadow-lg" role="alert">
+                <svg class="flex-shrink-0 inline w-5 h-5 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+                </svg>
+                <div>
+                    <span class="font-bold">Error:</span> {{ session('error') }}
+                </div>
+            </div>
+        @endif
+    </div>
+
 
     @if(count($cart) > 0)
         
-        {{-- TÍTULO SIMPLE (Sin botón de vaciar) --}}
         <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4">Resumen de productos</h3>
 
         <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
@@ -24,23 +34,18 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($cart as $id => $details)
-                    {{-- 🔥 IMPORTANTE: wire:key ES LO QUE ARREGLA EL BLOQUEO AL BORRAR UNO A UNO --}}
-                    <tr wire:key="cart-item-{{ $id }}" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                    @foreach($cart as $key => $details) {{-- Usamos $key porque es la clave del array asociativo --}}
+                    
+                    <tr wire:key="cart-item-{{ $key }}" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                         
                         {{-- COLUMNA PRODUCTO --}}
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="h-16 w-16 flex-shrink-0 mr-4 bg-white rounded-lg border border-gray-200 dark:border-gray-600 p-1 flex items-center justify-center overflow-hidden">
-                                    @if(isset($details['image_blob']) && !empty($details['image_blob']))
-                                        <img src="{{ $details['image_blob'] }}" alt="{{ $details['name'] }}" class="h-full w-full object-contain">
-                                    @elseif(isset($details['image_path']) && !empty($details['image_path']))
-                                        <img src="{{ asset('storage/' . $details['image_path']) }}" alt="{{ $details['name'] }}" class="h-full w-full object-contain">
-                                    @else
-                                        <div class="text-gray-300 flex flex-col items-center justify-center h-full w-full">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        </div>
-                                    @endif
+                                    {{-- LÓGICA DE IMAGEN MEJORADA --}}
+                                    <img src="{{ $details['image'] ?? ($details['image_blob'] ?? asset('storage/' . ($details['image_path'] ?? ''))) }}" 
+                                         alt="{{ $details['name'] }}" 
+                                         class="h-full w-full object-contain">
                                 </div>
                                 
                                 <div>
@@ -50,11 +55,11 @@
                                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         Talla: <span class="font-bold text-indigo-500">{{ $details['size'] ?? 'Estándar' }}</span>
                                     </div>
-                                    @if(isset($details['custom_name']) && $details['custom_name'])
+                                    @if((isset($details['custom_name']) && $details['custom_name']) || (isset($details['custom_number']) && $details['custom_number']))
                                         <div class="mt-1 inline-flex flex-col bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 rounded px-2 py-1">
                                             <div class="text-[10px] text-indigo-700 dark:text-indigo-300 font-bold uppercase tracking-wider">Personalizado</div>
                                             <div class="text-xs text-gray-700 dark:text-gray-200 font-medium">
-                                                {{ $details['custom_name'] }} 
+                                                {{ $details['custom_name'] ?? '' }} 
                                                 @if(isset($details['custom_number'])) <span class="mx-1 opacity-50">|</span> #{{ $details['custom_number'] }} @endif
                                             </div>
                                         </div>
@@ -71,9 +76,23 @@
                         {{-- CANTIDAD --}}
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-900 rounded-lg p-1 w-fit border border-gray-200 dark:border-gray-600">
-                                <button type="button" wire:click="decrement('{{ $id }}')" class="hover:bg-white dark:hover:bg-gray-700 shadow-sm rounded-md w-6 h-6 flex items-center justify-center font-bold text-xs text-gray-600 dark:text-gray-300 transition">-</button>
+                                {{-- BOTÓN MENOS --}}
+                                <button type="button" 
+                                        wire:click="decrement('{{ $key }}')" 
+                                        wire:loading.attr="disabled"
+                                        class="hover:bg-white dark:hover:bg-gray-700 shadow-sm rounded-md w-6 h-6 flex items-center justify-center font-bold text-xs text-gray-600 dark:text-gray-300 transition disabled:opacity-50">
+                                    -
+                                </button>
+                                
                                 <span class="font-bold text-gray-900 dark:text-white w-6 text-center text-sm">{{ $details['quantity'] }}</span>
-                                <button type="button" wire:click="increment('{{ $id }}')" class="hover:bg-white dark:hover:bg-gray-700 shadow-sm rounded-md w-6 h-6 flex items-center justify-center font-bold text-xs text-indigo-600 dark:text-indigo-400 transition">+</button>
+                                
+                                {{-- BOTÓN MÁS --}}
+                                <button type="button" 
+                                        wire:click="increment('{{ $key }}')" 
+                                        wire:loading.attr="disabled"
+                                        class="hover:bg-white dark:hover:bg-gray-700 shadow-sm rounded-md w-6 h-6 flex items-center justify-center font-bold text-xs text-indigo-600 dark:text-indigo-400 transition disabled:opacity-50">
+                                    +
+                                </button>
                             </div>
                         </td>
 
@@ -84,7 +103,7 @@
 
                         {{-- ELIMINAR --}}
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <button type="button" wire:click="remove('{{ $id }}')" class="group p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                            <button type="button" wire:click="remove('{{ $key }}')" class="group p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                                 <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </td>
@@ -94,7 +113,7 @@
             </table>
         </div>
 
-        {{-- RESUMEN --}}
+        {{-- RESUMEN FINAL --}}
         <div class="mt-8 bg-gray-50 dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-end">
             <div class="flex items-center gap-4 mb-2">
                 <span class="text-gray-500 dark:text-gray-400 font-medium">Total del pedido:</span>

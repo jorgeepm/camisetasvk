@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Camiseta blanca clásica con detalles dorados. Tecnología Heat.Rdy.',
             'price' => 95.00,
             'stock' => 50,
-            'image_blob' => $getBlob('madrid-2026.jpg')
+            'image_blob' => $getBlob('madrid-2026.png')
         ]);
 
         Product::create([
@@ -87,7 +87,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Edición especial con la franja en rayo real. Escudo bordado.',
             'price' => 80.00,
             'stock' => 50,
-            'image_blob' => $getBlob('rayo-2026.jpg')
+            'image_blob' => $getBlob('rayo-2025.png')
         ]);
 
         // --- Outlet ---
@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'La camiseta con la que ganaron todo. Últimas tallas.',
             'price' => 45.00,
             'stock' => 50,
-            'image_blob' => $getBlob('city-2024.jpg')
+            'image_blob' => $getBlob('city-2024.png')
         ]);
 
         // --- Retro ---
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'La camiseta del pentacampeonato. El Fenómeno.',
             'price' => 130.00,
             'stock' => 50,
-            'image_blob' => $getBlob('brasil-2002.jpg')
+            'image_blob' => $getBlob('brasil-2002.png')
         ]);
 
         Product::create([
@@ -116,7 +116,8 @@ class DatabaseSeeder extends Seeder
             'description' => 'La época dorada de San Siro. Publicidad de Bwin.',
             'price' => 115.00,
             'stock' => 50,
-            'image_blob' => $getBlob('milan-2007.jpg')
+            'image_blob' => $getBlob('ac-2007.png')
         ]);
+
     }
 }
