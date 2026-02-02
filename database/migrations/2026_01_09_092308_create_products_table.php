@@ -13,15 +13,20 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            // Esta línea conecta el producto con la categoría
             $table->foreignId('category_id')->constrained()->onDelete('cascade'); 
             $table->string('name');
             $table->decimal('price', 8, 2);
             $table->text('description');
             $table->integer('stock');
+            
+            // 👇👇👇 AÑADE ESTAS DOS LÍNEAS AQUÍ 👇👇👇
+            $table->string('image')->nullable();        // Para guardar la ruta "products/foto.png"
+            $table->longText('image_blob')->nullable(); // Para guardar el código binario gigante
+            // 👆👆👆 ------------------------------ 👆👆👆
+
             $table->timestamps();
-            $table->string('league')->nullable(); // Para la Liga
-            $table->string('team')->nullable();   // Para el Equipo
+            $table->string('league')->nullable(); 
+            $table->string('team')->nullable();   
         });
     }
 

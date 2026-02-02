@@ -18,17 +18,17 @@
                         
                         <div class="mb-4">
                             <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Dirección de Entrega</label>
-                            <input type="text" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Calle Falsa 123, Madrid">
+                            <input type="text" name="address" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Calle Falsa 123, Madrid">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Ciudad</label>
-                                <input type="text" required class="w-full border-gray-300 rounded-md shadow-sm" placeholder="Madrid">
+                                <input type="text" name="city" required class="w-full border-gray-300 rounded-md shadow-sm" placeholder="Madrid">
                             </div>
                             <div>
                                 <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Código Postal</label>
-                                <input type="text" required class="w-full border-gray-300 rounded-md shadow-sm" placeholder="28080">
+                                <input type="text" name="zip_code" required class="w-full border-gray-300 rounded-md shadow-sm" placeholder="28080">
                             </div>
                         </div>
 
@@ -57,25 +57,43 @@
                         <li class="py-4 flex justify-between">
                             <div class="flex items-center">
                                 
-                                {{-- 🖼️ IMAGEN HÍBRIDA (Checkout) --}}
-                                @if(isset($item['image_blob']) && $item['image_blob'])
-                                    {{-- 1. Nueva (Blob) --}}
-                                    <img src="{{ $item['image_blob'] }}" alt="img" class="h-10 w-10 rounded object-cover mr-3 border border-gray-300 dark:border-gray-500">
-                                
-                                @elseif(isset($item['image_path']) && $item['image_path'])
-                                    {{-- 2. Antigua (Storage) --}}
-                                    <img src="{{ asset('storage/' . $item['image_path']) }}" alt="img" class="h-10 w-10 rounded object-cover mr-3 border border-gray-300 dark:border-gray-500">
-                                
-                                @else
-                                    {{-- 3. Placeholder --}}
-                                    <div class="h-10 w-10 rounded bg-gray-200 mr-3 flex items-center justify-center text-xs text-gray-500 border border-gray-300">Sin foto</div>
-                                @endif
+                                {{-- 🖼️ BLOQUE DE IMAGEN INTELIGENTE (CORREGIDO) --}}
+                                <div class="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 mr-3">
+                                    @php
+                                        // 1. Buscamos si hay imagen en cualquier campo
+                                        // (Prioridad al campo 'image' normal, luego 'image_blob')
+                                        $imgData = $item['image'] ?? $item['image_blob'] ?? null;
+                                    @endphp
+
+                                    @if($imgData)
+                                        {{-- CASO A: Es un BLOB (Empieza por 'data:') -> Lo ponemos tal cual --}}
+                                        @if(str_starts_with($imgData, 'data:'))
+                                            <img src="{{ $imgData }}" 
+                                                 alt="{{ $item['name'] }}" 
+                                                 class="h-full w-full object-cover object-center">
+                                        
+                                        {{-- CASO B: Es una RUTA (Texto normal) -> Le añadimos 'storage/' --}}
+                                        @else
+                                            <img src="{{ asset('storage/' . $imgData) }}" 
+                                                 alt="{{ $item['name'] }}" 
+                                                 class="h-full w-full object-cover object-center">
+                                        @endif
+                                    @else
+                                        {{-- CASO C: No hay foto -> Placeholder --}}
+                                        <div class="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-500 font-bold">
+                                            Sin foto
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <div>
+                                    {{-- Usamos sintaxis de Array ['name'] para la sesión --}}
                                     <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $item['name'] }}</p>
-                                    <p class="text-xs text-gray-500">Cant: {{ $item['quantity'] }} | Talla: {{ $item['size'] ?? 'S' }}</p>
+                                    <p class="text-xs text-gray-500">Cant: {{ $item['quantity'] }}</p>
                                 </div>
                             </div>
+                            
+                            {{-- Precio calculado --}}
                             <span class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ number_format($item['price'] * $item['quantity'], 2) }} €
                             </span>
@@ -91,4 +109,17 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
+            // Seleccionamos el botón
+            var btn = this.querySelector('button[type="submit"]');
+            
+            // Lo desactivamos para evitar doble clic
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed'); // Estilos visuales de "desactivado"
+            
+            // Cambiamos el texto
+            btn.innerHTML = 'Procesando... ⏳';
+        });
+    </script>
 </x-app-layout>
