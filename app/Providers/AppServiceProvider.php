@@ -9,17 +9,11 @@ use App\Models\Category;               // Tu modelo de Categorías
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         // Compartir la variable $globalCategories con TODAS las vistas (necesario para el menú)

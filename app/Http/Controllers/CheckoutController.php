@@ -24,7 +24,7 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'El carrito está vacío.');
         }
 
-        // --- BLOQUE DE SEGURIDAD AÑADIDO ---s
+        // BLOQUE DE SEGURIDAD
         // Verificamos cada item del carrito antes de tocar la base de datos
         foreach($cart as $item) {
             // Validar largo del nombre (Máx 15)
@@ -35,7 +35,7 @@ class CheckoutController extends Controller
             if (isset($item['custom_number']) && ($item['custom_number'] < 1 || $item['custom_number'] > 99)) {
                 return redirect()->route('cart.index')->with('error', 'Seguridad: Se detectó un dorsal inválido.');
             }
-            // Validar que el nombre solo tenga letras (opcional pero recomendado)
+            // Validar que el nombre solo tenga letras
             if (isset($item['custom_name']) && !preg_match('/^[a-zA-Z\s]*$/', $item['custom_name'])) {
                 return redirect()->route('cart.index')->with('error', 'Seguridad: El nombre solo puede contener letras.');
             }

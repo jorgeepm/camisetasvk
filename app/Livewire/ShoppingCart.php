@@ -45,7 +45,6 @@ class ShoppingCart extends Component
             return;
         }
 
-        // 2. 🔥 CORRECCIÓN CRÍTICA: Verificación de stock GLOBAL 🔥
         // Sumamos cuántas unidades de este ID hay en TOTAL en el carrito (sumando todas las tallas)
         $quantityInCart = 0;
         foreach ($this->cart as $item) {
@@ -54,7 +53,7 @@ class ShoppingCart extends Component
             }
         }
 
-        // Si lo que ya hay en el carrito + 1 supera el stock real...
+        // Si lo que ya hay en el carrito + 1 supera el stock real
         if ($quantityInCart + 1 > $product->stock) {
             session()->flash('error', 'Stock insuficiente. Solo quedan ' . $product->stock . ' unidades.');
             return; // Detenemos la función aquí
@@ -78,7 +77,7 @@ class ShoppingCart extends Component
         }
     }
 
-    // Eliminar producto 🗑️
+    // Eliminar producto
     public function remove($key)
     {
         if (isset($this->cart[$key])) {

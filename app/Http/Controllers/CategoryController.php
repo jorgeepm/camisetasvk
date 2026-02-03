@@ -23,7 +23,6 @@ class CategoryController extends Controller
     }
 
     // --- MÉTODOS DE ADMINISTRADOR ---
-
     public function indexAdmin()
     {
         // Recuperamos categorías con el conteo de productos que tienen
@@ -36,13 +35,13 @@ class CategoryController extends Controller
         // Validación
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'required|string' // Ahora validamos la descripción
+            'description' => 'required|string'
         ]);
 
         // Crear guardando ambos datos
         \App\Models\Category::create([
             'name' => $request->name,
-            'description' => $request->description // <--- IMPORTANTE
+            'description' => $request->description
         ]);
 
         return back()->with('success', 'Categoría creada correctamente.');
@@ -50,9 +49,8 @@ class CategoryController extends Controller
 
     public function destroy(\App\Models\Category $category)
     {
-        // Opcional: Evitar borrar si tiene productos
         if($category->products()->count() > 0){
-             return back()->with('error', 'No puedes borrar una categoría que tiene productos asociados.');
+            return back()->with('error', 'No puedes borrar una categoría que tiene productos asociados.');
         }
 
         $category->delete();

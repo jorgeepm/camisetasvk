@@ -21,8 +21,6 @@ class Product extends Model
     ];
 
     // Relación: Un producto PERTENECE A una categoría
-    // Aquí empieza la magia. Todo debe estar entre las llaves { } de la clase.
-
     // 1. Relación: Un producto PERTENECE A una categoría
     public function category()
     {
@@ -35,7 +33,7 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    // 3. Scopes de Lautaro (Filtros) - Para cuando fusiones su código
+    // 3. Scopes de Lautaro (Filtros)
     public function scopeLeague($query, $league)
     {
         if ($league) {

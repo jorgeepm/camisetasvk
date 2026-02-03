@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order; // ✅ Importamos Order, no Product
+use App\Models\Order; // Importamos Order, no Product
 use Illuminate\Http\Request;
 
 class AdminOrderController extends Controller
@@ -20,17 +20,14 @@ class AdminOrderController extends Controller
     public function show(Order $order)
     {
         // Cargamos los productos asociados al pedido
-        // Asegúrate de que en tu modelo Order la relación se llame 'items' (o 'products')
         $order->load('user', 'items.product'); 
         
         return view('admin.orders.show', compact('order'));
     }
 
-    // --- MÉTODO UPDATE CORREGIDO ---
-    // Antes tenías aquí "Product $product", eso era lo que rompía la web.
     public function update(Request $request, Order $order)
     {
-        // 1. Validamos usando las palabras EN INGLÉS que tienes en tu HTML
+        // 1. Validamos usando las palabras EN INGLÉS
         $request->validate([
             'status' => 'required|in:pending,paid,shipped,completed,cancelled',
         ]);

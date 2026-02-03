@@ -24,7 +24,6 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
-        // --- VALIDACIÓN DE STOCK REAL (CORREGIDA) ---
         // Contamos cuántas unidades de ESTE producto (ID) hay ya en el carrito,
         // sumando todas las variantes (tallas, nombres, etc.)
         $quantityInCart = 0;
@@ -74,7 +73,7 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
-        // --- VALIDACIÓN DE STOCK REAL (CORREGIDA) ---
+        // VALIDACIÓN DE STOCK REAL (CORREGIDA)
         $quantityInCart = 0;
         foreach ($cart as $item) {
             if ($item['id'] == $id) {
@@ -85,7 +84,6 @@ class CartController extends Controller
         if (($quantityInCart + 1) > $product->stock) {
             return redirect()->back()->with('error', 'Stock insuficiente. Ya tienes el máximo disponible en tu carrito.');
         }
-        // ---------------------------------------------
 
         // Clave única para diferenciar tallas y personalizaciones
         $size = $request->size;

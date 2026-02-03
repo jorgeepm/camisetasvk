@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Url; // <--- IMPORTANTE: Importar esto
+use Livewire\Attributes\Url;
 use App\Models\Product;
 use App\Models\Category;
 

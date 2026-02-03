@@ -7,7 +7,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\AddressController; // <--- FALTABA ESTO
+use App\Http\Controllers\AddressController;
 use App\Models\Product;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Route;
