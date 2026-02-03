@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
 
         // Si quieres que los usuarios normales TAMBIÉN vayan al catálogo 
         // (lo más normal en una tienda), usa esta línea:
-        return redirect()->route('catalog.all');
+        return redirect()->intended(route('catalog.all'));
 
         // Si prefieres que los usuarios normales vayan al Dashboard original,
         // borra la línea de arriba y descomenta la de abajo:
